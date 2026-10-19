@@ -1,5 +1,8 @@
 # Empty Game Window (Swift)
 
+Task: [0001 — Empty launch window](../README.md). Repository rules:
+[AGENTS.md](../../AGENTS.md).
+
 A minimal macOS game window built with AppKit and Swift Package Manager.
 
 ## Run
