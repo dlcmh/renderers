@@ -8,7 +8,8 @@ the CPU-drawn baseline; see the [Metal variant](../swift-metal/) for the
 GPU-backed version.
 
 The app opens a centered, resizable 1280×720 window with a black surface.
-Close the window, press Escape, or press ⌘Q to quit.
+Close the window, press Escape, or press ⌘Q to quit. A minimal application menu
+provides the standard Quit item so ⌘Q works.
 
 ## Run
 

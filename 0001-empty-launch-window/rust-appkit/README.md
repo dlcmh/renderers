@@ -26,7 +26,7 @@ cargo run -p rust-appkit
 ```
 
 A centered, resizable 1280×720 window opens with a black surface. Close the
-window or press Escape to quit.
+window, press Escape, or press ⌘Q to quit.
 
 ## The delta from Swift
 
@@ -50,23 +50,27 @@ object still needs an explicit ownership story.
 
 1. **Assert the main thread.** `MainThreadMarker::new()` fails if the process is
    not on the main thread. AppKit requires one. See
-   [src/main.rs:127](src/main.rs#L127).
+   [src/main.rs:151](src/main.rs#L151).
 2. **Create the application** with `NSApplication::sharedApplication(mtm)` and set
    the regular activation policy so the window gets a Dock presence.
-3. **Create the window** with the same style mask as the Swift variant:
+3. **Install the application menu.** A programmatic app has no menu bar, so ⌘Q
+   would otherwise do nothing. `install_main_menu` adds the standard Quit item
+   ([src/main.rs:93](src/main.rs#L93), called at
+   [src/main.rs:159](src/main.rs#L159)).
+4. **Create the window** with the same style mask as the Swift variant:
    titled, closable, miniaturizable, and resizable
-   ([src/main.rs:91](src/main.rs#L91)).
-4. **Own the window from Rust.** Programmatic windows are released when closed by
+   ([src/main.rs:116](src/main.rs#L116)).
+5. **Own the window from Rust.** Programmatic windows are released when closed by
    default. We set `setReleasedWhenClosed(false)` because the Rust `Retained`
-   wrapper is the owner ([src/main.rs:112](src/main.rs#L112)).
-5. **Install a custom view.** `GameView` overrides `drawRect:` and fills the dirty
+   wrapper is the owner ([src/main.rs:137](src/main.rs#L137)).
+6. **Install a custom view.** `GameView` overrides `drawRect:` and fills the dirty
    rectangle with black ([src/main.rs:28](src/main.rs#L28)). It also accepts first
    responder and handles Escape in `keyDown:`.
-6. **Register an application delegate.** It returns `true` from
+7. **Register an application delegate.** It returns `true` from
    `applicationShouldTerminateAfterLastWindowClosed:` so closing the only window
    quits the process ([src/main.rs:74](src/main.rs#L74)).
-7. **Show and run.** `makeKeyAndOrderFront`, `makeFirstResponder`, `activate`, then
-   `app.run()` ([src/main.rs:117](src/main.rs#L117)).
+8. **Show and run.** `makeKeyAndOrderFront`, `makeFirstResponder`, `activate`, then
+   `app.run()` ([src/main.rs:142](src/main.rs#L142)).
 
 ## The FFI boundary
 
@@ -89,7 +93,7 @@ are retained by their local variables and AppKit references.
 
 ## Deliberate omissions
 
-- No application menu, so there is no ⌘Q menu item; close or Escape quits.
+- No menu commands beyond the standard Quit item (⌘Q).
 - No rendering layer beyond AppKit's CPU drawing.
 - No cross-platform windowing abstraction. This is the macOS platform edge that a
   future shared RHI will sit behind.

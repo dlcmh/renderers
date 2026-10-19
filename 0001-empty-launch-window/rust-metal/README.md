@@ -25,7 +25,7 @@ cargo run -p rust-metal
 ```
 
 A centered, resizable 1280×720 window opens with a dark blue surface. Close the
-window or press Escape to quit.
+window, press Escape, or press ⌘Q to quit.
 
 ## Comparison
 
@@ -45,25 +45,28 @@ is inside `unsafe`.
 
 ## How it works
 
-1. **Create the device and queue** at [src/main.rs:71](src/main.rs#L71) and
-   [src/main.rs:75](src/main.rs#L75). `MTLCreateSystemDefaultDevice()` needs
+1. **Create the device and queue** at [src/main.rs:96](src/main.rs#L96) and
+   [src/main.rs:100](src/main.rs#L100). `MTLCreateSystemDefaultDevice()` needs
    CoreGraphics linked, hence the empty `#[link]` block near the top of
    [src/main.rs](src/main.rs#L21).
-2. **Create the window and install a `MetalView`** at
-   [src/main.rs:55](src/main.rs#L55). The view is a layer-hosting `NSView`.
-3. **Configure the `CAMetalLayer`** in
-   [src/metal_view.rs:84](src/metal_view.rs#L84):
-   BGRA8 drawable format, opaque, framebuffer-only, and a three-drawable pool.
-4. **Attach the layer to the view** at
+2. **Install the application menu** at [src/main.rs:26](src/main.rs#L26). A
+   programmatic app has no menu bar, so this adds the standard Quit item and makes
+   ⌘Q work.
+3. **Create the window and install a `MetalView`** at
+   [src/main.rs:80](src/main.rs#L80). The view is a layer-hosting `NSView`.
+4. **Configure the `CAMetalLayer`** in
+   [src/metal_view.rs:84](src/metal_view.rs#L84): BGRA8 drawable format, opaque,
+   framebuffer-only, and a three-drawable pool.
+5. **Attach the layer to the view** at
    [src/metal_view.rs:101](src/metal_view.rs#L101).
-5. **Keep the drawable in pixels** in
+6. **Keep the drawable in pixels** in
    [src/metal_view.rs:108](src/metal_view.rs#L108). AppKit reports points; a 2×
    Retina display needs a 2× drawable.
-6. **Encode one clear pass** in
+7. **Encode one clear pass** in
    [src/metal_view.rs:123](src/metal_view.rs#L123). Acquire a drawable, create a
    command buffer, set the color attachment's clear color, end encoding, present,
    and commit.
-7. **Render on layout events.** `setFrameSize:`, `viewDidMoveToWindow`, and
+8. **Render on layout events.** `setFrameSize:`, `viewDidMoveToWindow`, and
    `viewDidChangeBackingProperties` update the drawable size and submit a frame
    (see [src/metal_view.rs:35](src/metal_view.rs#L35)). There is no display link,
    so this is not a continuous game loop yet.
@@ -104,8 +107,8 @@ broader comparison.
 
 - No shader, pipeline, vertex buffer, or draw call.
 - No continuous frame loop, display link, or in-flight frame semaphore.
-- No application menu; close or Escape quits.
-- No menu bar, input handling beyond Escape, or cross-platform surface abstraction.
+- No menu commands beyond the standard Quit item (⌘Q).
+- No input handling beyond Escape, or cross-platform surface abstraction.
 
 ## Verification
 

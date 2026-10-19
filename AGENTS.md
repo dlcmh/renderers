@@ -171,7 +171,8 @@ Clippy with warnings denied, build, and test — from the repository root:
   significant.
 - Keep UI work on the main thread and avoid blocking the run loop.
 - For the macOS apps, keep the established interaction: standard window controls,
-  Escape quits, closing the last window terminates the app.
+  a minimal application menu with a Quit item (⌘Q), Escape quits, and closing the
+  last window terminates the app.
 - Keep code readable and direct. Comment intent and non-obvious constraints, not
   syntax.
 - Do not commit generated output: `.build/`, `.swiftpm/`, `DerivedData/`,

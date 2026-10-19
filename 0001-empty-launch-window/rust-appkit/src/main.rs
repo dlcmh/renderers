@@ -2,10 +2,10 @@ use std::process::ExitCode;
 
 use objc2::rc::Retained;
 use objc2::runtime::ProtocolObject;
-use objc2::{MainThreadMarker, MainThreadOnly, define_class, msg_send};
+use objc2::{MainThreadMarker, MainThreadOnly, define_class, msg_send, sel};
 use objc2_app_kit::{
     NSApplication, NSApplicationActivationPolicy, NSApplicationDelegate, NSBackingStoreType,
-    NSColor, NSEvent, NSRectFill, NSView, NSWindow, NSWindowStyleMask,
+    NSColor, NSEvent, NSMenu, NSMenuItem, NSRectFill, NSView, NSWindow, NSWindowStyleMask,
 };
 use objc2_foundation::{NSObject, NSObjectProtocol, NSPoint, NSRect, NSSize, ns_string};
 
@@ -88,6 +88,31 @@ impl AppDelegate {
     }
 }
 
+/// A programmatic app has no menu bar by default, so ⌘Q would not be handled.
+/// Install the minimal application menu needed for the standard Quit item.
+fn install_main_menu(mtm: MainThreadMarker, app: &NSApplication) {
+    let main_menu = NSMenu::new(mtm);
+    let app_menu_item = NSMenuItem::new(mtm);
+    let app_menu = NSMenu::new(mtm);
+    app_menu_item.setTitle(ns_string!("Rust AppKit"));
+
+    // SAFETY: `terminate:` is a valid NSApplication action and both strings are
+    // valid NSString values.
+    let quit_item = unsafe {
+        NSMenuItem::initWithTitle_action_keyEquivalent(
+            NSMenuItem::alloc(mtm),
+            ns_string!("Quit"),
+            Some(sel!(terminate:)),
+            ns_string!("q"),
+        )
+    };
+
+    app_menu.addItem(&quit_item);
+    app_menu_item.setSubmenu(Some(&app_menu));
+    main_menu.addItem(&app_menu_item);
+    app.setMainMenu(Some(&main_menu));
+}
+
 fn create_window(mtm: MainThreadMarker) -> Retained<NSWindow> {
     let content_rect = NSRect::new(NSPoint::new(0.0, 0.0), NSSize::new(1280.0, 720.0));
 
@@ -131,6 +156,7 @@ fn main() -> ExitCode {
 
     let app = NSApplication::sharedApplication(mtm);
     app.setActivationPolicy(NSApplicationActivationPolicy::Regular);
+    install_main_menu(mtm, &app);
 
     let delegate = AppDelegate::new(mtm);
     app.setDelegate(Some(ProtocolObject::from_ref(&*delegate)));

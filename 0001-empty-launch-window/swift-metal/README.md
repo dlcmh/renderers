@@ -59,7 +59,8 @@ swift run
 ```
 
 A centered, resizable 1280×720 window opens with a dark blue surface. Close it,
-press Escape, or press ⌘Q to quit.
+press Escape, or press ⌘Q to quit. A minimal application menu provides the
+standard Quit item so ⌘Q works.
 
 ## How one frame is produced
 

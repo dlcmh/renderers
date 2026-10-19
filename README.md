@@ -46,7 +46,7 @@ cargo run -p rust-metal                   # GPU-backed variant
 ```
 
 All four open a centered, resizable 1280×720 window. AppKit windows are black;
-Metal windows are dark blue. Close a window or press Escape to quit.
+Metal windows are dark blue. Close a window, press Escape, or press ⌘Q to quit.
 
 Start with the Swift CPU baseline, then read [the Metal notes](0001-empty-launch-window/swift-metal/README.md#the-delta-at-a-glance)
 for the comparison between `draw(_:)` and an explicit GPU render pass. The Rust

@@ -40,7 +40,7 @@ framework.
 - [x] Each variant opens a centered, resizable 1280×720 window.
 - [x] AppKit variants fill the content view black; Metal variants clear a drawable
       to dark blue.
-- [x] Closing the window or pressing Escape quits the app.
+- [x] Closing the window, pressing Escape, or pressing ⌘Q quits the app.
 - [x] Each window is reported on screen with layer 0 by the window server.
 
 ## Verification
@@ -99,6 +99,8 @@ granted; this does not affect the apps.
 - The variants intentionally duplicate window and app-lifecycle code so each can
   be read in isolation. Shared abstractions are deferred until a later task
   demonstrates the need.
+- Every variant installs a minimal application menu with a standard Quit item so
+  ⌘Q quits, in addition to closing the window or pressing Escape.
 - Deeper Metal teaching notes live in the
   [Swift Metal README](swift-metal/README.md) and
   [Rust Metal README](rust-metal/README.md).

@@ -132,6 +132,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var window: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        installMainMenu()
+
         // MTLCreateSystemDefaultDevice returns the GPU macOS wants the app to
         // use: the integrated GPU on Apple silicon, or the preferred GPU on an
         // Intel Mac with more than one.
@@ -174,6 +176,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         true
+    }
+
+    /// A programmatic app has no menu bar by default, so ⌘Q would not be handled.
+    /// Install the minimal application menu needed for the standard Quit item.
+    @MainActor
+    private func installMainMenu() {
+        let mainMenu = NSMenu()
+        let appMenuItem = NSMenuItem()
+        let appMenu = NSMenu()
+        let quitItem = NSMenuItem(
+            title: "Quit",
+            action: #selector(NSApplication.terminate(_:)),
+            keyEquivalent: "q"
+        )
+
+        appMenuItem.title = ProcessInfo.processInfo.processName
+        appMenu.addItem(quitItem)
+        appMenuItem.submenu = appMenu
+        mainMenu.addItem(appMenuItem)
+        NSApp.mainMenu = mainMenu
     }
 
     @MainActor
