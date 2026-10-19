@@ -23,10 +23,15 @@ Rust terminals teach — read
 
 | # | Task | Variants | Status |
 | --- | --- | --- | --- |
-| 0001 | [Empty launch window](0001-empty-launch-window/README.md) | [Swift (AppKit)](0001-empty-launch-window/swift-appkit/), [Swift (Metal)](0001-empty-launch-window/swift-metal/), [Rust (AppKit)](0001-empty-launch-window/rust-appkit/), [Rust (Metal)](0001-empty-launch-window/rust-metal/), [C++ (AppKit)](0001-empty-launch-window/cpp-appkit/), [C++ (Metal)](0001-empty-launch-window/cpp-metal/) | Complete |
+| 0001 | [Empty launch window](0001-empty-launch-window/README.md) | [Rust (AppKit)](0001-empty-launch-window/rust-appkit/), [Rust (Metal)](0001-empty-launch-window/rust-metal/), [C++ (AppKit)](0001-empty-launch-window/cpp-appkit/), [C++ (Metal)](0001-empty-launch-window/cpp-metal/) | Complete |
+| 0001 | (legacy) | [Swift (AppKit)](0001-empty-launch-window/swift-appkit/), [Swift (Metal)](0001-empty-launch-window/swift-metal/) | Frozen |
 
 New tasks get the next unused four-digit number and a kebab-case name. See
 [AGENTS.md](AGENTS.md) for the full conventions and agent workflow.
+
+Maintained stacks are **Rust and C++**. The Swift variants are frozen reference
+material kept for the side-by-side comparison; they receive no new features (see
+ADR-0015).
 
 ## Quick start
 
@@ -34,8 +39,6 @@ Build artifacts stay outside the repository by default. The wrapper configures,
 builds, and runs one variant using the right toolchain:
 
 ```sh
-./scripts/run.sh swift-appkit
-./scripts/run.sh swift-metal
 ./scripts/run.sh rust-appkit
 ./scripts/run.sh rust-metal
 ./scripts/run.sh cpp-appkit
@@ -46,13 +49,13 @@ Artifacts go to `/tmp/renderers`. Override that location with
 `RENDERERS_BUILD_ROOT`. Each variant README documents the underlying compiler
 commands.
 
-All six open a centered, resizable 1280×720 window. AppKit windows are black;
+All variants open a centered, resizable 1280×720 window. AppKit windows are black;
 Metal windows are dark blue. Close a window, press Escape, or press ⌘Q to quit.
 
-Start with the Swift CPU baseline, then read [the Metal notes](0001-empty-launch-window/swift-metal/README.md#the-delta-at-a-glance)
-for the comparison between `draw(_:)` and an explicit GPU render pass. The Rust
+Start with a CPU baseline, then read [the Metal notes](0001-empty-launch-window/swift-metal/README.md#the-delta-at-a-glance)
+for the comparison between CPU drawing and an explicit GPU render pass. The Rust
 and C++ variants mirror the pair and show the same AppKit/Metal concepts through
-their FFI boundaries.
+their FFI boundaries. The Swift variants remain available as a frozen reference.
 
 ## Cleanup
 
@@ -70,27 +73,29 @@ external root is configurable with `RENDERERS_BUILD_ROOT`.
 ## Requirements
 
 - macOS 14 or newer
-- Swift 6 toolchain (Xcode Command Line Tools or Xcode) for the Swift variants
 - Rust 1.85+ and Cargo for the Rust variants; the repository pins Rust 1.97.1
 - CMake 3.28+ and Apple Clang for the C++ variants; the documented commands use
   Ninja
+- Swift 6 toolchain only if you want to build the frozen Swift reference variants
 
 The current setup was verified with macOS 26.6.2, Swift 6.3.3, Rust 1.97.1,
 Apple Clang 21.0.0, and CMake 4.4.4 on arm64.
 
-Run the language checks with (all use the external build root):
+Run the maintained language checks with (both use the external build root):
 
 ```sh
-./scripts/check-swift.sh
 ./scripts/check-rust.sh
 ./scripts/check-cpp.sh
 ```
+
+`./scripts/check-swift.sh` still builds the frozen Swift references.
 
 ## Repository conventions
 
 - One numbered directory per task: `NNNN-kebab-case-task/`.
 - Each task has a README with its goal, acceptance criteria, and status.
 - Each language variant is independent and has its own run instructions.
+- Maintained stacks are Rust and C++; Swift is frozen reference material.
 - Builds default to `/tmp/renderers`; `scripts/clean.sh` removes all known
   artifacts, including the external build root.
 - Durable decisions are recorded in [docs/DECISIONS.md](docs/DECISIONS.md).

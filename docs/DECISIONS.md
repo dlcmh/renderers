@@ -423,3 +423,41 @@ layer is documented as a deliberate tradeoff rather than an accident. The raw-FF
 variant is an optional experiment, not a maintenance burden on every Rust variant.
 C++ remains the dependency-lightest host language, which is itself useful teaching
 material.
+
+## ADR-0015 — Freeze Swift, maintain Rust and C++
+
+- **Date:** 2026-10-19
+- **Status:** Accepted
+
+### Context
+
+The repository is oriented toward cross-platform renderers and future
+accelerators. Swift is an Apple-only language for practical native graphics work:
+Metal is Apple-only, there is no first-class cross-platform windowing or graphics
+stack, and the ecosystem around native graphics is small. Keeping three host
+languages also multiplies ports of every future task without adding renderer
+knowledge.
+
+The Swift variants in task 0001 did serve a purpose: they made the AppKit CPU draw
+and the Metal clear easy to compare. The Rust and C++ variants already carry the
+same concepts, so that purpose does not require Swift going forward.
+
+### Decision
+
+- Maintained stacks are **Rust and C++**. New variants, new tasks, and all
+  renderer features go to these.
+- Freeze the Swift variants at their current state. Do not add features, do not
+  add new Swift variants, and do not port new tasks to Swift.
+- Keep the frozen Swift directories and their documentation, clearly labelled, so
+  the six-way comparison in task 0001 remains readable.
+- Do not delete the Swift code yet. Deletion is a later call once Rust and C++ have
+  covered the concepts the Swift variants illustrated. If deleted, record it in a
+  new ADR that supersedes this one.
+
+### Consequences
+
+Future tasks have two maintained ports instead of three, which keeps the
+repository focused and lowers drift. The repo still requires the Swift toolchain
+only to build the frozen references, and `scripts/check-swift.sh` is a reference
+check rather than part of the maintained workflow. The task index marks Swift
+variants as frozen.

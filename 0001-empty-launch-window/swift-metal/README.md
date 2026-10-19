@@ -1,5 +1,11 @@
 # Metal Launch Window (Swift / Metal)
 
+> **Frozen reference variant.** Swift is not a maintained stack in this
+> repository; it does not align with the cross-platform goal (ADR-0015). This
+> variant is kept for the side-by-side AppKit/Metal comparison and receives no
+> new work. Maintained equivalents: [rust-metal](../rust-metal/) and
+> [cpp-metal](../cpp-metal/).
+
 Task: [0001 — Empty launch window](../README.md). CPU baseline:
 [swift-appkit](../swift-appkit/). Repository rules: [AGENTS.md](../../AGENTS.md).
 

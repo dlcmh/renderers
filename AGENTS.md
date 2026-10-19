@@ -45,10 +45,11 @@ make a concept obvious to a reader who has not used the API before.
 
 ## Current state
 
-- `0001-empty-launch-window/swift-appkit` is complete: an AppKit window with a
-  black, CPU-drawn content view.
-- `0001-empty-launch-window/swift-metal` is complete: a `CAMetalLayer`-backed
-  window cleared to dark blue by a Metal render pass.
+- **Maintained stacks:** Rust and C++. New variants and features go to these.
+  Swift does not align with the cross-platform goal and gets no new work
+  (ADR-0015).
+- **Frozen:** the Swift variants in task 0001. They are reference material for the
+  AppKit/Metal comparison and must not receive new features (ADR-0015).
 - `0001-empty-launch-window/rust-appkit` is complete: the AppKit baseline ported
   to Rust through the `objc2` bindings.
 - `0001-empty-launch-window/rust-metal` is complete: the Metal clear ported to
@@ -57,6 +58,8 @@ make a concept obvious to a reader who has not used the API before.
   in Objective-C++ with ARC.
 - `0001-empty-launch-window/cpp-metal` is complete: the Metal clear written in
   Objective-C++ with ARC.
+- `0001-empty-launch-window/swift-appkit` and `swift-metal` are complete and
+  frozen: an AppKit black draw and a `CAMetalLayer` clear.
 - There are no tests, CI workflows, or shared libraries yet.
 - **Direction:** new rendering work is GPU-only (ADR-0012). The CPU AppKit
   variants stay as baselines. The next backend after Metal is Vulkan, behind a
@@ -79,8 +82,8 @@ Naming rules:
 - Task directories use a four-digit sequence and kebab-case:
   `0002-draw-triangle`.
 - Never reuse, renumber, or recycle a task directory. New work gets a new number.
-- Language directories use lowercase canonical names: `swift`, `rust`, `c`,
-  `cpp`, `python`, etc.
+- Language directories use lowercase canonical names: `rust`, `cpp`, `c`,
+  `python`, etc. Swift is frozen reference material and gets no new directories.
 - When one language has multiple meaningful implementations in a task, qualify
   the directory with the backend: `swift-appkit`, `swift-metal`, `rust-winit`,
   `rust-wgpu`, etc. See ADR-0005.
@@ -123,26 +126,23 @@ default: helper scripts put artifacts under `/tmp/renderers`, overridable with
 ./scripts/run.sh <variant>
 ```
 
-Variants: `swift-appkit`, `swift-metal`, `rust-appkit`, `rust-metal`,
-`cpp-appkit`, `cpp-metal`.
+Variants: `rust-appkit`, `rust-metal`, `cpp-appkit`, `cpp-metal`. The frozen
+Swift variants also have runners (`swift-appkit`, `swift-metal`) for reference
+work only.
 
-For the current Swift task, the underlying commands are:
+Do not extend the Swift variants. If a Swift reference must be checked, its
+underlying commands are:
 
 ```sh
 cd 0001-empty-launch-window/swift-appkit
 swift run --scratch-path /tmp/renderers/swift-appkit
 ```
 
-The debug binary is under the scratch path:
+The debug binaries are under the scratch path:
 `/tmp/renderers/swift-appkit/debug/EmptyGameWindow` and
-`/tmp/renderers/swift-metal/debug/MetalLaunchWindow`. Run the Swift check — which
-builds both variants into the external root — from the repository root:
-
-```sh
-./scripts/check-swift.sh
-```
-
-Run `swift test` when a test target exists.
+`/tmp/renderers/swift-metal/debug/MetalLaunchWindow`. `./scripts/check-swift.sh`
+builds both into the external root; it is a reference check, not part of the
+maintained workflow.
 
 The Rust variants live in a Cargo workspace at
 `0001-empty-launch-window/Cargo.toml`:

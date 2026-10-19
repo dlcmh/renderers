@@ -132,6 +132,8 @@ Lessons for this repository:
 
 | Question | Position |
 | --- | --- |
+| Maintained stacks | **Rust and C++ only.** New variants and features go here. |
+| Swift variants | **Frozen.** Kept as reference material for the AppKit/Metal comparison; no new features or variants (ADR-0015). Swift does not align with the cross-platform goal. |
 | CPU AppKit variants | Keep as baselines and comparisons; no new CPU-renderer work. |
 | New rendering work | GPU path only: pipeline, draw calls, frame loop, then renderer features. |
 | Next backend | Vulkan, after the Metal path teaches the core concepts; this is also the path to Chinese GPUs and HarmonyOS. |
@@ -139,6 +141,10 @@ Lessons for this repository:
 | NPU / AI accelerators | Out of scope for the renderer; if needed later, a separate, narrow adapter. |
 | Cross-platform hosting | Keep the platform layer explicit. Use `wgpu`/`winit` only when shipping value outweighs the learning value. |
 | Shader authoring | Keep one portable source (likely WGSL or SPIR-V via a toolchain) and translate per backend; this is a future task. |
+
+The Metal and AppKit concepts taught by the Swift variants are already carried by
+the Rust and C++ variants, so freezing Swift removes a language host without
+removing any lesson.
 
 ### Suggested sequence from here
 

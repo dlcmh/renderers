@@ -20,8 +20,9 @@ The Rust and C++ variants are direct ports, not wrappers around a windowing or
 rendering framework.
 
 **Direction:** the CPU/AppKit variants are baselines for comparison only. New
-rendering work in this repository is GPU-only; see
-[Strategic direction](../docs/STRATEGY.md) and ADR-0012 in
+rendering work in this repository is GPU-only (ADR-0012) and goes to the Rust and
+C++ stacks. Swift is frozen for cross-platform reasons (ADR-0015); see
+[Strategic direction](../docs/STRATEGY.md) and
 [docs/DECISIONS.md](../docs/DECISIONS.md).
 
 ## Non-goals
@@ -30,18 +31,23 @@ rendering work in this repository is GPU-only; see
 - Input handling beyond quitting.
 - A continuous animation or game loop.
 - A cross-platform windowing abstraction.
-- Sharing code between the six variants.
+- Sharing code between the variants.
+- Extending the frozen Swift variants.
 
 ## Variants
 
+Maintained stacks are Rust and C++. The Swift variants are **frozen reference
+material** kept for the side-by-side comparison; they receive no new work (see
+ADR-0015).
+
 | Stack | Path | Run | Surface |
 | --- | --- | --- | --- |
-| Swift / AppKit | [`swift-appkit/`](swift-appkit/) | `cd swift-appkit && swift run` | Black, CPU-drawn |
-| Swift / Metal | [`swift-metal/`](swift-metal/) | `cd swift-metal && swift run` | Dark blue, GPU clear |
 | Rust / AppKit | [`rust-appkit/`](rust-appkit/) | `cd rust-appkit && cargo run` | Black, CPU-drawn |
 | Rust / Metal | [`rust-metal/`](rust-metal/) | `cd rust-metal && cargo run` | Dark blue, GPU clear |
 | C++ / AppKit | [`cpp-appkit/`](cpp-appkit/) | [CMake commands](cpp-appkit/README.md#run) | Black, CPU-drawn |
 | C++ / Metal | [`cpp-metal/`](cpp-metal/) | [CMake commands](cpp-metal/README.md#run) | Dark blue, GPU clear |
+| Swift / AppKit (frozen) | [`swift-appkit/`](swift-appkit/) | `./scripts/run.sh swift-appkit` | Black, CPU-drawn |
+| Swift / Metal (frozen) | [`swift-metal/`](swift-metal/) | `./scripts/run.sh swift-metal` | Dark blue, GPU clear |
 
 ## Acceptance criteria
 
@@ -58,22 +64,25 @@ Build and launch any variant from the repository root. The wrapper keeps all
 build artifacts under `/tmp/renderers`:
 
 ```sh
-./scripts/run.sh swift-appkit
-./scripts/run.sh swift-metal
 ./scripts/run.sh rust-appkit
 ./scripts/run.sh rust-metal
 ./scripts/run.sh cpp-appkit
 ./scripts/run.sh cpp-metal
 ```
 
-The underlying tool commands are documented in each variant README. The language
-checks also use the external build root:
+The frozen Swift references can still be launched with
+`./scripts/run.sh swift-appkit` and `./scripts/run.sh swift-metal`.
+
+The underlying tool commands are documented in each variant README. The
+maintained language checks use the external build root:
 
 ```sh
-./scripts/check-swift.sh
 ./scripts/check-rust.sh
 ./scripts/check-cpp.sh
 ```
+
+`./scripts/check-swift.sh` remains available as a reference check for the frozen
+Swift variants.
 
 Confirm each window through the macOS window server. A temporary
 `CGWindowListCopyWindowInfo` script reported on-screen windows owned by
@@ -93,8 +102,9 @@ Remove all in-repo and external build artifacts with:
 
 ## Notes
 
-- Swift variants are SwiftPM executables with a macOS 14 deployment target and no
-  third-party dependencies.
+- Swift variants are frozen reference material: SwiftPM executables with a macOS
+  14 deployment target and no third-party dependencies. They receive no new work
+  (ADR-0015).
 - Rust variants live in a Cargo workspace at the task root. They use `objc2` and
   its AppKit/Metal/QuartzCore bindings as thin language bindings, not as a
   windowing framework. `Cargo.lock` is committed.
