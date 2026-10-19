@@ -53,6 +53,10 @@ make a concept obvious to a reader who has not used the API before.
   to Rust through the `objc2` bindings.
 - `0001-empty-launch-window/rust-metal` is complete: the Metal clear ported to
   Rust, including explicit `Retained` ownership of the layer and command queue.
+- `0001-empty-launch-window/cpp-appkit` is complete: the AppKit baseline written
+  in Objective-C++ with ARC.
+- `0001-empty-launch-window/cpp-metal` is complete: the Metal clear written in
+  Objective-C++ with ARC.
 - There are no tests, CI workflows, or shared libraries yet.
 - Task numbers are derived from the top-level directories. After `0001`, the next
   new task is expected to be `0002-<kebab-name>`.
@@ -137,6 +141,25 @@ Clippy with warnings denied, build, and test — from the repository root:
 ./scripts/check-rust.sh
 ```
 
+The C++ variants share one CMake project at
+`0001-empty-launch-window/CMakeLists.txt`:
+
+```sh
+cd 0001-empty-launch-window
+cmake -S . -B build-cpp -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build build-cpp
+./build-cpp/cpp-appkit
+./build-cpp/cpp-metal
+```
+
+The CMake project compiles with ARC, `-Wall -Wextra -Wpedantic -Werror`, and an
+optional `ENABLE_SANITIZERS=ON` AddressSanitizer/UndefinedBehaviorSanitizer
+configuration. Run the complete C++ check from the repository root:
+
+```sh
+./scripts/check-cpp.sh
+```
+
 ### Rust conventions
 
 - Use thin API bindings (`objc2`, `objc2-app-kit`, `objc2-metal`,
@@ -150,6 +173,23 @@ Clippy with warnings denied, build, and test — from the repository root:
 - The workspace pins Rust 1.97.1 in `rust-toolchain.toml`; run `cargo fmt --all`
   and `cargo clippy --workspace --all-targets -- -D warnings` before committing.
 - Add new Rust crates as workspace members and keep `Cargo.lock` in sync.
+
+### C++ conventions
+
+- AppKit and Metal are Objective-C APIs, so use Objective-C++ (`.mm`) at the
+  macOS boundary. Do not add a cross-platform windowing or rendering framework to
+  hide that boundary.
+- Compile with ARC. Keep Objective-C object lifetimes explicit in the source:
+  strong instance variables for windows/GPU objects, and
+  `__attribute__((objc_precise_lifetime))` for the weak application delegate.
+- The shared CMake project lives at the task root. Compile with
+  `-Wall -Wextra -Wpedantic -Werror`; discard intentionally unused callback
+  parameters with `(void)parameter`.
+- Format with the repository `.clang-format`. `scripts/check-cpp.sh` runs
+  `clang-format --dry-run --Werror` and builds both the normal and sanitizer
+  configurations.
+- Keep CMake build directories out of git; root `.gitignore` covers `build/` and
+  `build-*/`.
 
 ### Verifying a GUI launch
 
@@ -229,6 +269,9 @@ Verified on 2026-10-19 (re-check before relying on it):
 - macOS 26.6.2, arm64
 - Swift 6.3.3 (Xcode Command Line Tools)
 - Rust 1.97.1, Cargo 1.97.1 (pinned by `rust-toolchain.toml`)
+- Apple Clang 21.0.0, CMake 4.4.4, Ninja
+- `clang-format` from the Xcode Command Line Tools; `clang-tidy` is not currently
+  installed
 - Git 2.50.1
 - Swift package deployment target: macOS 14
 

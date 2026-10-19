@@ -279,3 +279,39 @@ Rust variant means adding one workspace member and refreshing the lockfile. The
 mixed-language task root now contains a Cargo workspace alongside the Swift
 directories; Cargo only knows about its explicit members. Rust-specific tooling
 is documented in `AGENTS.md` so future variants follow the same pattern.
+
+## ADR-0011 — C++ variants use Objective-C++ and one CMake project
+
+- **Date:** 2026-10-19
+- **Status:** Accepted
+- **Task:** `0001-empty-launch-window`
+
+### Context
+
+The C++ variants need direct access to AppKit and Metal, which are Objective-C
+APIs. Introducing a cross-platform windowing or rendering framework would hide
+the native boundary the repository is meant to teach. The task also needs a build
+system, formatting, warnings-as-errors, and a sanitizer path that work for
+Objective-C++.
+
+### Decision
+
+- Write the macOS boundary in Objective-C++ (`.mm`) and compile with ARC. Keep
+  C++/Objective-C object lifetimes explicit: strong ivars for windows and GPU
+  objects, and `__attribute__((objc_precise_lifetime))` for the weak application
+  delegate.
+- Use one CMake project at the task root with `cpp-appkit` and `cpp-metal`
+  targets. Compile with `-Wall -Wextra -Wpedantic -Werror`.
+- Provide an `ENABLE_SANITIZERS` option that adds AddressSanitizer and
+  UndefinedBehaviorSanitizer to both compile and link steps.
+- Format with the repository `.clang-format`; `scripts/check-cpp.sh` performs the
+  format check and builds both normal and sanitizer configurations.
+- Do not adopt `clang-tidy` yet; it is not installed in the current environment.
+  The compiler warnings plus sanitizer build are the baseline.
+
+### Consequences
+
+The C++ variants are macOS-specific Objective-C++ rather than portable standard
+C++. That is deliberate: the shared RHI boundary remains a future layer above the
+platform APIs. CMake build directories stay out of git, and adding another C++
+variant means adding one target and one source file.

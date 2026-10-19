@@ -18,7 +18,7 @@ on Windows and the HarmonyOS host model.
 
 | # | Task | Variants | Status |
 | --- | --- | --- | --- |
-| 0001 | [Empty launch window](0001-empty-launch-window/README.md) | [Swift (AppKit)](0001-empty-launch-window/swift-appkit/), [Swift (Metal)](0001-empty-launch-window/swift-metal/), [Rust (AppKit)](0001-empty-launch-window/rust-appkit/), [Rust (Metal)](0001-empty-launch-window/rust-metal/) | Complete |
+| 0001 | [Empty launch window](0001-empty-launch-window/README.md) | [Swift (AppKit)](0001-empty-launch-window/swift-appkit/), [Swift (Metal)](0001-empty-launch-window/swift-metal/), [Rust (AppKit)](0001-empty-launch-window/rust-appkit/), [Rust (Metal)](0001-empty-launch-window/rust-metal/), [C++ (AppKit)](0001-empty-launch-window/cpp-appkit/), [C++ (Metal)](0001-empty-launch-window/cpp-metal/) | Complete |
 
 New tasks get the next unused four-digit number and a kebab-case name. See
 [AGENTS.md](AGENTS.md) for the full conventions and agent workflow.
@@ -45,26 +45,40 @@ cargo run -p rust-appkit                  # CPU-drawn baseline
 cargo run -p rust-metal                   # GPU-backed variant
 ```
 
-All four open a centered, resizable 1280×720 window. AppKit windows are black;
+C++ variants:
+
+```sh
+cd 0001-empty-launch-window
+cmake -S . -B build-cpp -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build build-cpp
+./build-cpp/cpp-appkit                    # CPU-drawn baseline
+./build-cpp/cpp-metal                     # GPU-backed variant
+```
+
+All six open a centered, resizable 1280×720 window. AppKit windows are black;
 Metal windows are dark blue. Close a window, press Escape, or press ⌘Q to quit.
 
 Start with the Swift CPU baseline, then read [the Metal notes](0001-empty-launch-window/swift-metal/README.md#the-delta-at-a-glance)
 for the comparison between `draw(_:)` and an explicit GPU render pass. The Rust
-variants mirror the pair and show the same AppKit/Metal concepts through FFI.
+and C++ variants mirror the pair and show the same AppKit/Metal concepts through
+their FFI boundaries.
 
 ## Requirements
 
 - macOS 14 or newer
 - Swift 6 toolchain (Xcode Command Line Tools or Xcode) for the Swift variants
 - Rust 1.85+ and Cargo for the Rust variants; the repository pins Rust 1.97.1
+- CMake 3.28+ and Apple Clang for the C++ variants; the documented commands use
+  Ninja
 
-The current setup was verified with macOS 26.6.2, Swift 6.3.3, and Rust 1.97.1 on
-arm64.
+The current setup was verified with macOS 26.6.2, Swift 6.3.3, Rust 1.97.1,
+Apple Clang 21.0.0, and CMake 4.4.4 on arm64.
 
-Run the full Rust check with:
+Run the language checks with:
 
 ```sh
 ./scripts/check-rust.sh
+./scripts/check-cpp.sh
 ```
 
 ## Repository conventions

@@ -435,11 +435,15 @@ For this repository, the working definition is:
 | GPU abstraction framework (`wgpu`, `bgfx`) | No for the learning backends |
 | Cross-platform windowing framework (`winit`) | No for now; it hides the platform lesson |
 | Thin API bindings (`objc2`, `ash`, `metal`) | Yes, behind our own modules |
+| Objective-C++ at the macOS boundary | Yes — AppKit and Metal are Objective-C APIs |
 | Hand-written FFI where bindings are missing | Yes |
 | Our own RHI, renderer, and platform boundary | Yes — this is the lesson |
 
 A binding is not a framework. The renderer, RHI, and platform decisions remain
-yours.
+yours. The C++ variants use Objective-C++ rather than a cross-platform windowing
+library because the native boundary itself is part of the lesson; see
+[ADR-0011](DECISIONS.md) and the
+[C++ AppKit README](../0001-empty-launch-window/cpp-appkit/README.md).
 
 ### Rust crates by role
 
