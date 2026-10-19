@@ -169,6 +169,77 @@ Shader translation is one of the largest real-world portability costs. Tools suc
 as SPIRV-Cross, DXC, and Naga translate between representations, but not every
 feature maps cleanly.
 
+### `.metal` files and the Metal Shading Language
+
+A `.metal` file is Metal's shader source format. It is not a binary, a project file,
+or a build script: it is a plain-text C++-like program written in **Metal Shading
+Language (MSL)**, the language Metal uses for GPU code.
+
+What the format gives you:
+
+- **A real compiler target.** MSL has its own standard library (`metal_stdlib`),
+  vector and matrix types (`float4`, `half3`, `float4x4`), and fixed-function
+  intrinsics such as `mix`, `dot`, `saturate`, `step`, `length`, and `normalize`.
+  You write code that looks like C++ but runs per-vertex or per-fragment on the GPU.
+- **Entry points declared in the source.** Functions are marked `vertex`,
+  `fragment`, `kernel` (compute), or other stage keywords. The name you pass to
+  `makeFunction(name:)` / `newFunctionWithName:` is exactly the function name in
+  the file.
+- **Binding attributes.** The `[[...]]` annotations attach data to parameters and
+  return values. These are the MSL equivalent of a function signature telling the
+  host what to provide.
+
+The attributes in task 0002's shader:
+
+| Attribute | Meaning |
+| --- | --- |
+| `[[vertex_id]]` | The index of the vertex being processed (0, 1, 2, …) |
+| `[[buffer(n)]]` | A buffer bound at index `n`; host code binds matching indices |
+| `[[position]]` | The clip-space position the vertex shader returns |
+| `[[stage_in]]` | The interpolated output handed from the vertex stage to the fragment stage |
+
+There are also `[[texture(n)]]`, `[[sampler(n)]]`, `[[thread_position_in_grid]]`,
+`[[color(n)]]` for render targets, and more, used by later stages of the work.
+
+#### Runtime compile versus offline compile
+
+A `.metal` file is usually consumed one of two ways:
+
+| Path | How | Tradeoff |
+| --- | --- | --- |
+| **Runtime compilation** | Load the source string and call `MTLLibrary` (`newLibraryWithSource:options:error:` or Swift's `makeLibrary(source:options:)`) | Simple, no build step, shader stays readable next to host code; costs compile time at launch, and the toolchain must be present. |
+| **Offline compilation** | Run the `metal` command-line compiler to produce a `.metallib`, then load it with `newLibraryWithData:` | Fast startup, ships without source, standard for production; adds a build step. |
+
+Task 0002 uses runtime compilation because it keeps the shader visible and the
+setup to one file. The offline path needs the full Xcode Metal toolchain (`xcrun
+metal`); the Command Line Tools here do not include it, so the runtime path is also
+the one that works in this environment.
+
+#### Compile errors look like compiler diagnostics
+
+Runtime compilation fails with an `NSError` whose message is normal compiler
+output, including line numbers and source excerpts. A deliberately broken shader
+reported:
+
+```text
+program_source:4:30: error: use of undeclared identifier 'undefined_symbol'
+```
+
+The `program_source:` prefix is the name Metal gives to the source string. That is
+why the Rust and C++ variants surface the error text instead of swallowing it.
+
+#### How this maps to other backends
+| Metal | Vulkan | Direct3D 12 | WebGPU |
+| --- | --- | --- | --- |
+| `.metal` (MSL source) | GLSL or HLSL compiled to `.spv` (SPIR-V) | HLSL compiled to DXIL | `.wgsl` (WGSL) |
+| `metal` command → `.metallib` | `glslc` / `dxc` → `.spv` | `dxc` → `.cso` | `wgsl` translation |
+| `MTLLibrary` | `VkShaderModule` | `IDxcBlob` | `GPUShaderModule` |
+
+The idea is identical everywhere: a shader language, entry points, bound resources,
+and a compiled module. Only the syntax, the binding model, and the offline tool
+differ. Keeping a single canonical source and translating it is the future
+portability task described in [docs/STRATEGY.md](STRATEGY.md).
+
 ### Buffer and texture
 
 A **buffer** is linear GPU-accessible memory: vertices, indices, uniforms, storage

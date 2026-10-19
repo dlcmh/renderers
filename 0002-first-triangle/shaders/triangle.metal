@@ -1,6 +1,21 @@
-// One shader source for the whole task. Both the Rust and C++ variants compile
-// this string at runtime with MTLLibrary, so the shader is also the teaching
-// artifact: read it next to the pipeline setup on the host side.
+// A `.metal` file is Metal Shading Language (MSL) source: a small C++-like
+// program that runs on the GPU. A vertex function runs once per vertex; a
+// fragment function runs once per covered pixel. This file names two entry
+// points, `vertex_main` and `fragment_main`, which the host looks up by name
+// after compiling the source into an MTLLibrary.
+//
+// The `[[...]]` attributes are how the shader declares what the host must bind:
+// `[[buffer(n)]]` matches host bindings at index n, `[[vertex_id]]` is the
+// vertex index, `[[position]]` is the clip-space output, and `[[stage_in]]` is
+// the interpolated vertex output handed to the fragment stage.
+//
+// See docs/GRAPHICS-CONCEPTS.md, section "`.metal` files and the Metal Shading
+// Language", for runtime versus offline compilation and the equivalents in
+// Vulkan, D3D12, and WebGPU.
+//
+// One shader source for the whole task: both the Rust and C++ variants compile
+// it at runtime with MTLLibrary, so the shader is also the teaching artifact.
+// Read it next to the pipeline setup on the host side.
 #include <metal_stdlib>
 using namespace metal;
 

@@ -43,6 +43,33 @@ variant because a CPU triangle is a rasterizer lesson, not this one.
 | Rust / Metal | [`rust-metal/`](rust-metal/) | `./scripts/run.sh rust-metal-triangle` |
 | C++ / Metal | [`cpp-metal/`](cpp-metal/) | `./scripts/run.sh cpp-metal-triangle` |
 
+## The shader file
+
+[`shaders/triangle.metal`](shaders/triangle.metal) is a **Metal Shading Language**
+source file: a small C++-like program that runs on the GPU. The `.metal`
+extension is Metal's shader source format — plain text, not a binary or a build
+file. It names two entry points that the host finds by name after compiling it:
+
+- `vertex_main` runs once per vertex and returns a clip-space position plus a
+  color.
+- `fragment_main` runs once per pixel covered by the triangle and returns the
+  interpolated color.
+
+The `[[...]]` attributes declare the interface with the host: `[[buffer(0)]]` and
+`[[buffer(1)]]` match the two vertex buffers bound at those indices,
+`[[vertex_id]]` is the vertex index, `[[position]]` is the required clip-space
+output, and `[[stage_in]]` receives the vertex stage's interpolated output.
+
+The shader is compiled at runtime with `MTLLibrary` for both variants, which keeps
+it readable next to the host code. Production code usually compiles it offline with
+the `metal` command into a `.metallib`. That toolchain is not included in the
+Command Line Tools here, and runtime compilation also gives clear compiler
+diagnostics (errors include line numbers and source excerpts).
+
+For the full explanation — attributes, runtime versus offline compilation, and the
+Vulkan/D3D12/WebGPU equivalents — see
+[Graphics concepts and portability](../docs/GRAPHICS-CONCEPTS.md#metal-files-and-the-metal-shading-language).
+
 ## Acceptance criteria
 
 - [x] Both variants build with warnings treated as errors.
