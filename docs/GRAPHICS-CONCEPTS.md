@@ -470,6 +470,43 @@ library because the native boundary itself is part of the lesson; see
 [ADR-0011](DECISIONS.md) and the
 [C++ AppKit README](../0001-empty-launch-window/cpp-appkit/README.md).
 
+### Language asymmetry: Objective-C++ versus Rust bindings
+
+The four macOS host stacks do not pay the same price for language interop. That is
+expected, and it is part of what the variants teach.
+
+| Language | Needs a binding layer? | How it reaches AppKit/Metal |
+| --- | --- | --- |
+| Swift | No | Built-in Objective-C interop. |
+| C++ | No | The compiler is the binding: Objective-C++ (`.mm`) compiles C++ and Objective-C in one translation unit, with ARC for lifetime. |
+| Rust | Yes | `objc2` plus generated framework crates (`objc2-app-kit`, `objc2-metal`, `objc2-quartz-core`). Rust cannot include Cocoa headers or message-send directly. |
+
+So C++ developers write the same AppKit and Metal calls in the language Apple's
+APIs are written in, while Rust developers depend on a third-party translation
+layer. That layer is substantial: message-send safety, ARC-like `Retained<T>`,
+runtime class registration (`define_class!`), protocol objects, and bindings for the
+SDK surface used here.
+
+C++ is not free of external machinery either. Its stack is CMake, framework
+linking (Cocoa, Metal, QuartzCore, CoreGraphics), `clang-format`, and the sanitizers.
+The difference is that the interop itself is not a dependency: native Objective-C
+and C++ compile together.
+
+Tradeoffs:
+
+- **C++:** fewer moving parts, every OS call is native, and no binding can lag an
+  API. The cost is Apple-specific Objective-C++ code that never runs on other
+  platforms without a rewrite.
+- **Rust:** more moving parts, but the host code is memory-safe Rust with a
+  well-tested binding. The risk is that a binding lags an API you need, and the
+  unsafe boundary still has to be understood.
+
+Policy for this repository: thin bindings stay the default for Rust, and a
+hand-written FFI variant is deferred until the renderer path is established. See
+[ADR-0014](DECISIONS.md). The raw-FFI comparison is planned later as an explicit
+teaching variant (`rust-metal-raw`) rather than as the foundation of every Rust
+variant.
+
 ### Rust crates by role
 
 | Crate | Role | Verdict for this repo |

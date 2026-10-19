@@ -192,6 +192,10 @@ Remove all known build artifacts, including the external root:
 - Use thin API bindings (`objc2`, `objc2-app-kit`, `objc2-metal`,
   `objc2-quartz-core`) behind our own modules. Do not introduce `winit`, `wgpu`,
   or an engine for these learning variants.
+- Do not hand-write Objective-C FFI as the baseline. Bindings are a deliberate
+  tradeoff (see ADR-0014 and
+  [docs/GRAPHICS-CONCEPTS.md](docs/GRAPHICS-CONCEPTS.md#language-asymmetry-objective-c-versus-rust-bindings));
+  a future `rust-metal-raw` variant may teach the binding layer explicitly.
 - Keep `unsafe` at the FFI and AppKit override boundaries. Every unsafe block
   needs a `// SAFETY:` comment that states the invariant; the workspace denies
   `clippy::undocumented_unsafe_blocks`.

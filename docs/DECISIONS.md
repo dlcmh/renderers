@@ -386,3 +386,40 @@ with the platforms that are likely to matter. Compute and NPU support, if added
 later, will be adapters rather than core dependencies. Accepting Vulkan as the
 next backend implies a future task for a first-cut RHI and a Vulkan implementation
 of the same triangle.
+
+## ADR-0014 — Keep thin Rust bindings; defer a raw-FFI variant
+
+- **Date:** 2026-10-19
+- **Status:** Accepted
+- **Task:** `0001-empty-launch-window` (affects all Rust work)
+
+### Context
+
+The C++ variants reach AppKit and Metal through Objective-C++, which compiles
+in-language and needs no binding crate. Swift has built-in Objective-C interop.
+Rust, by contrast, needs `objc2` and its framework crates to message-send to
+Objective-C objects, register classes, and model ownership. This asymmetry raised
+the question of whether Rust should hand-write its FFI to match C++'s "no binding
+dependency."
+
+### Decision
+
+- Keep `objc2` and its framework crates as the default Rust binding layer,
+  isolated behind our own modules.
+- Do not hand-write Objective-C FFI as the baseline. It adds unsafe code, retain
+  and release reasoning, and class/protocol boilerplate without advancing the
+  renderer lesson.
+- Plan a separate, later teaching variant (`rust-metal-raw`) that implements the
+  same launch window with hand-written `objc_msgSend` FFI, to make the binding
+  layer explicit by comparison.
+- Treat the real cross-language comparison as ownership and safety: ARC
+  (Swift/C++), reference counting with `Retained<T>` (Rust), and `unsafe` boundaries
+  in both Rust and C++ — not "dependency versus no dependency."
+
+### Consequences
+
+Rust variants stay maintainable and focused on graphics concepts, and the binding
+layer is documented as a deliberate tradeoff rather than an accident. The raw-FFI
+variant is an optional experiment, not a maintenance burden on every Rust variant.
+C++ remains the dependency-lightest host language, which is itself useful teaching
+material.
