@@ -204,6 +204,8 @@ Metal is Apple-only, but the concepts are not. Rough equivalents:
 
 That is why this task is useful beyond macOS: the sequence—acquire a surface
 image, record a pass, submit, present—is the core of every modern graphics API.
+For the full vocabulary and a platform portability checklist, see
+[Graphics concepts and portability](../../docs/GRAPHICS-CONCEPTS.md).
 
 ## Status
 

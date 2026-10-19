@@ -152,6 +152,10 @@ The debug binary is `.build/debug/EmptyGameWindow` in the AppKit variant and
 - **Variant `README.md`:** exact run command and what the user should observe.
 - **`docs/DECISIONS.md`:** append an ADR for choices future agents would
   otherwise relitigate. Do not rewrite accepted history; supersede it instead.
+- **`docs/GRAPHICS-CONCEPTS.md`:** the shared vocabulary and portability field
+  guide. Update it when terminology, platform assumptions, or the
+  from-scratch/binding policy changes. Link to it when explaining concepts rather
+  than re-deriving definitions in each task.
 - Update this file when working conventions change.
 
 ## Definition of done

@@ -66,3 +66,5 @@ granted; this does not affect the apps.
   demonstrates the need.
 - Deeper Metal teaching notes live in the
   [Metal variant README](swift-metal/README.md).
+- Shared terminology and portability guidance live in
+  [Graphics concepts and portability](../docs/GRAPHICS-CONCEPTS.md).

@@ -6,6 +6,14 @@ principles. Each task isolates one concept, stays runnable on its own, and
 compares any materially new technique with the approach it replaces. The
 repository is not a shared library.
 
+## Start here
+
+New to native graphics, or coming from web development? Read
+[Graphics concepts and portability](docs/GRAPHICS-CONCEPTS.md) first. It defines
+the vocabulary used throughout the repo — backend, RHI, surface, swapchain,
+pipeline — and explains the platform tradeoffs, including Vulkan versus Direct3D
+on Windows and the HarmonyOS host model.
+
 ## Tasks
 
 | # | Task | Variants | Status |

@@ -203,3 +203,43 @@ material. New implementations live in their own variant directories, and existin
 folders may be renamed when a clearer comparison requires it. The AppKit-versus-
 Metal comparison in task 0001 is the reference example for future tasks.
 
+## ADR-0009 — Portability strategy: thin bindings, Metal first, Vulkan second
+
+- **Date:** 2026-10-19
+- **Status:** Accepted
+
+### Context
+
+The repository should teach native graphics from first principles and eventually
+support multiple backends, with HarmonyOS Next as a possible future target. The
+Rust binding ecosystem is uneven: Apple bindings such as `objc2` are mature, while
+HarmonyOS Rust tooling is younger and community-driven. HarmonyOS also requires an
+ArkTS host, NAPI bridge, and XComponent surface rather than a standalone native
+binary. A blanket "zero third-party crates" policy would not remove that platform
+work.
+
+### Decision
+
+- Do not use game engines or GPU abstraction frameworks for the learning
+  backends. In particular, no Bevy, `wgpu`, or `bgfx`; defer `winit` while the
+  native windowing layer is part of the lesson.
+- Allow thin, direct API bindings (`objc2`/`objc2-metal`, later `ash` for Vulkan)
+  when they are mature. Isolate them behind our own platform and RHI modules, and
+  keep their types out of the renderer API.
+- Expect hand-written or vendored FFI where bindings are missing, especially for a
+  future HarmonyOS NAPI/XComponent/Vulkan host.
+- Implement the Metal backend first, then a Vulkan backend; extract the RHI only
+  after the second backend exposes the real differences.
+- Treat the platform layer and the GPU layer as separate seams. HarmonyOS will use
+  an ArkTS + NAPI + XComponent host; macOS will use AppKit + `CAMetalLayer`.
+
+The reasoning and vocabulary are documented in
+[docs/GRAPHICS-CONCEPTS.md](GRAPHICS-CONCEPTS.md).
+
+### Consequences
+
+The macOS learning path stays focused on renderer concepts without taking on the
+risk of hand-maintaining Objective-C bindings. Portability is achieved through
+owned interfaces and a second backend, not through avoiding dependencies
+everywhere. HarmonyOS work will require a separate host project and may require
+more FFI effort than the macOS variants.
