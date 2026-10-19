@@ -148,10 +148,13 @@ removing any lesson.
 
 ### Suggested sequence from here
 
-1. **Shader pipeline and a triangle** on Metal (task 0002): vertex buffer, shader
-   compilation, pipeline state, draw call. This is the core of every GPU renderer.
-2. **Continuous frame loop**: display link, in-flight frame limiting, resize-safe
-   drawable handling. GPU work without pacing is not a game renderer.
+1. ~~**Shader pipeline and a triangle** on Metal (task 0002): vertex buffer, shader
+   compilation, pipeline state, draw call.~~ **Done.** The first frame loop and a
+   minimal in-flight semaphore landed with it.
+2. **Pacing and animation**: time uniforms, a display link that schedules against
+   the target timestamp, in-flight frames released by the GPU without blocking,
+   and resize-safe drawable handling. GPU work without pacing is not a game
+   renderer.
 3. **Camera and depth**: uniforms, projection, depth testing, a rotating cube.
 4. **Vulkan backend**: implement the same triangle behind a first-cut RHI, then
    refactor the Metal backend to match. This is where the multi-backend skill is

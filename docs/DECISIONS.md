@@ -461,3 +461,64 @@ repository focused and lowers drift. The repo still requires the Swift toolchain
 only to build the frozen references, and `scripts/check-swift.sh` is a reference
 check rather than part of the maintained workflow. The task index marks Swift
 variants as frozen.
+
+## ADR-0016 — Shaders are first-class task assets
+
+- **Date:** 2026-10-19
+- **Status:** Accepted
+- **Task:** `0002-first-triangle`
+
+### Context
+
+Task 0001 needed no shader because a render pass can clear its attachment as a
+fixed-function step. Task 0002 introduces the pipeline, and with it the first
+shader source in the repository. Shader authoring and compilation are also one of
+the largest sources of backend portability cost, so the shader should be read and
+maintained like code, not hidden inside a host-language string.
+
+### Decision
+
+- Keep shader source in a task-level `shaders/` directory, as a `.metal` file.
+- Embed that file at compile time in Rust (`include_str!`).
+- Mirror the source as a string literal in the C++ variant for now, and note the
+  duplication in its README.
+- Compile from source at runtime so the pipeline setup and the shader remain
+  readable side by side. Note that production builds usually precompile to a
+  `.metallib`, and treat offline compilation as a later task.
+
+### Consequences
+
+The shader has a canonical location and a diffable history, and every variant
+points at it in its own README. The C++ copy can drift from the canonical file; a
+future task should generate it or add an offline compilation step. That offline
+step is also the natural starting point for the shader toolchain work needed by a
+Vulkan backend.
+
+## ADR-0017 — One Rust workspace and one CMake project per task
+
+- **Date:** 2026-10-19
+- **Status:** Accepted
+- **Task:** `0002-first-triangle`
+- **Supersedes for structure:** the single-workspace layout of ADR-0010.
+
+### Context
+
+ADR-0010 put the Rust variants of task 0001 into one Cargo workspace so they could
+share a lockfile and tooling. Task 0002 adds a separate concept with its own
+dependencies and its own build. Sharing one workspace across tasks would couple
+unrelated experiments and force one lockfile to describe every task.
+
+### Decision
+
+- Each task owns its Rust workspace and its CMake project at the task root.
+- The check scripts become task-aware: `check-rust.sh` and `check-cpp.sh` iterate
+  over an explicit task list.
+- `run.sh` dispatches on task-qualified variant names (`rust-metal-triangle`,
+  `cpp-metal-triangle`).
+
+### Consequences
+
+Tasks stay independent and can diverge in dependencies and tooling without
+affecting each other. New tasks must be added to `run.sh`, both check scripts, and
+`clean.sh`; that cost is explicit and small. The ADR-0010 goal of consistent
+tooling is preserved by the shared scripts rather than by a shared workspace.

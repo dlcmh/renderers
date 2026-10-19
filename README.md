@@ -25,6 +25,7 @@ Rust terminals teach — read
 | --- | --- | --- | --- |
 | 0001 | [Empty launch window](0001-empty-launch-window/README.md) | [Rust (AppKit)](0001-empty-launch-window/rust-appkit/), [Rust (Metal)](0001-empty-launch-window/rust-metal/), [C++ (AppKit)](0001-empty-launch-window/cpp-appkit/), [C++ (Metal)](0001-empty-launch-window/cpp-metal/) | Complete |
 | 0001 | (legacy) | [Swift (AppKit)](0001-empty-launch-window/swift-appkit/), [Swift (Metal)](0001-empty-launch-window/swift-metal/) | Frozen |
+| 0002 | [First triangle](0002-first-triangle/README.md) | [Rust (Metal)](0002-first-triangle/rust-metal/), [C++ (Metal)](0002-first-triangle/cpp-metal/) | Complete |
 
 New tasks get the next unused four-digit number and a kebab-case name. See
 [AGENTS.md](AGENTS.md) for the full conventions and agent workflow.
@@ -43,6 +44,8 @@ builds, and runs one variant using the right toolchain:
 ./scripts/run.sh rust-metal
 ./scripts/run.sh cpp-appkit
 ./scripts/run.sh cpp-metal
+./scripts/run.sh rust-metal-triangle
+./scripts/run.sh cpp-metal-triangle
 ```
 
 Artifacts go to `/tmp/renderers`. Override that location with
@@ -52,10 +55,12 @@ commands.
 All variants open a centered, resizable 1280×720 window. AppKit windows are black;
 Metal windows are dark blue. Close a window, press Escape, or press ⌘Q to quit.
 
-Start with a CPU baseline, then read [the Metal notes](0001-empty-launch-window/swift-metal/README.md#the-delta-at-a-glance)
-for the comparison between CPU drawing and an explicit GPU render pass. The Rust
-and C++ variants mirror the pair and show the same AppKit/Metal concepts through
-their FFI boundaries. The Swift variants remain available as a frozen reference.
+Start with task 0001 to see a CPU baseline and the simplest GPU frame; then read
+[the Metal notes](0001-empty-launch-window/swift-metal/README.md#the-delta-at-a-glance)
+for CPU drawing versus an explicit GPU render pass. Task 0002 adds the shader
+pipeline, vertex data, a draw call, and a display-link frame loop. The Rust and
+C++ variants mirror both tasks and show the same concepts through their FFI
+boundaries. The Swift variants remain available as a frozen reference.
 
 ## Cleanup
 

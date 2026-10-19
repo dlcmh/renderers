@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-# Format-check, build, and sanitizer-build the C++ task variants outside the repo.
+# Format-check, build, and sanitizer-build every C++ task target outside the repo.
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-task_root="$repo_root/0001-empty-launch-window"
 build_root="${RENDERERS_BUILD_ROOT:-/tmp/renderers}"
 
 if [[ "$build_root" != /* || "$build_root" == "/" || "$build_root" == "$repo_root" ||
@@ -18,16 +17,26 @@ else
     clang_format="$(xcrun --find clang-format)"
 fi
 
+tasks=(
+    "0001-empty-launch-window"
+    "0002-first-triangle"
+)
+
 "$clang_format" --dry-run --Werror \
-    "$task_root/cpp-appkit/src/main.mm" \
-    "$task_root/cpp-metal/src/main.mm"
+    "$repo_root/0001-empty-launch-window/cpp-appkit/src/main.mm" \
+    "$repo_root/0001-empty-launch-window/cpp-metal/src/main.mm" \
+    "$repo_root/0002-first-triangle/cpp-metal/src/main.mm"
 
-cmake -S "$task_root" -B "$build_root/cpp" -G Ninja -DCMAKE_BUILD_TYPE=Debug
-cmake --build "$build_root/cpp"
+for task in "${tasks[@]}"; do
+    task_root="$repo_root/$task"
+    echo "== $task =="
+    cmake -S "$task_root" -B "$build_root/$task-cpp" -G Ninja -DCMAKE_BUILD_TYPE=Debug
+    cmake --build "$build_root/$task-cpp"
 
-cmake -S "$task_root" -B "$build_root/cpp-asan" -G Ninja \
-    -DCMAKE_BUILD_TYPE=Debug \
-    -DENABLE_SANITIZERS=ON
-cmake --build "$build_root/cpp-asan"
+    cmake -S "$task_root" -B "$build_root/$task-cpp-asan" -G Ninja \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DENABLE_SANITIZERS=ON
+    cmake --build "$build_root/$task-cpp-asan"
+done
 
-echo "C++ checks passed (artifacts in $build_root/cpp and $build_root/cpp-asan)."
+echo "C++ checks passed (artifacts under $build_root)."

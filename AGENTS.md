@@ -60,12 +60,16 @@ make a concept obvious to a reader who has not used the API before.
   Objective-C++ with ARC.
 - `0001-empty-launch-window/swift-appkit` and `swift-metal` are complete and
   frozen: an AppKit black draw and a `CAMetalLayer` clear.
+- `0002-first-triangle/rust-metal` and `0002-first-triangle/cpp-metal` are
+  complete: a shader pipeline, vertex buffers, a draw call, and a display-link
+  frame loop. The shared shader lives in `0002-first-triangle/shaders/`.
 - There are no tests, CI workflows, or shared libraries yet.
 - **Direction:** new rendering work is GPU-only (ADR-0012). The CPU AppKit
   variants stay as baselines. The next backend after Metal is Vulkan, behind a
   first-cut RHI; compute, if added, stays behind a separate seam (ADR-0013).
-- Task numbers are derived from the top-level directories. After `0001`, the next
-  new task is expected to be `0002-<kebab-name>`.
+- Task numbers are derived from the top-level directories. After `0002`, the next
+  new task is expected to be `0003-<kebab-name>`. The planned next concept is
+  pacing and animation (time uniforms, in-flight frames without blocking).
 
 ## Repository layout
 
@@ -126,9 +130,9 @@ default: helper scripts put artifacts under `/tmp/renderers`, overridable with
 ./scripts/run.sh <variant>
 ```
 
-Variants: `rust-appkit`, `rust-metal`, `cpp-appkit`, `cpp-metal`. The frozen
-Swift variants also have runners (`swift-appkit`, `swift-metal`) for reference
-work only.
+Variants: `rust-appkit`, `rust-metal`, `cpp-appkit`, `cpp-metal` from task 0001;
+`rust-metal-triangle` and `cpp-metal-triangle` from task 0002. The frozen Swift
+variants also have runners (`swift-appkit`, `swift-metal`) for reference work only.
 
 Do not extend the Swift variants. If a Swift reference must be checked, its
 underlying commands are:
@@ -144,35 +148,36 @@ The debug binaries are under the scratch path:
 builds both into the external root; it is a reference check, not part of the
 maintained workflow.
 
-The Rust variants live in a Cargo workspace at
-`0001-empty-launch-window/Cargo.toml`:
+Each task has its own Rust workspace and its own CMake project, so tasks do not
+share build configuration. `check-rust.sh` and `check-cpp.sh` iterate over every
+task automatically; add new tasks to their `tasks` arrays.
+
+The Rust variants live in a Cargo workspace per task, for example
+`0002-first-triangle/Cargo.toml`:
 
 ```sh
-cd 0001-empty-launch-window
-CARGO_TARGET_DIR=/tmp/renderers/rust-target cargo run -p rust-appkit
-CARGO_TARGET_DIR=/tmp/renderers/rust-target cargo run -p rust-metal
+cd 0002-first-triangle
+CARGO_TARGET_DIR=/tmp/renderers/0002-first-triangle-target cargo run -p rust-metal-triangle
 ```
 
-`Cargo.lock` is committed because these are binaries. Run the complete Rust check
-— formatting, Clippy with warnings denied, build, and test — from the repository
-root:
+`Cargo.lock` is committed in every task workspace because these are binaries. Run
+the complete Rust check — formatting, Clippy with warnings denied, build, and test
+for every task — from the repository root:
 
 ```sh
 ./scripts/check-rust.sh
 ```
 
-The C++ variants share one CMake project at
-`0001-empty-launch-window/CMakeLists.txt`:
+The C++ variants share one CMake project per task, for example
+`0002-first-triangle/CMakeLists.txt`:
 
 ```sh
-cd 0001-empty-launch-window
-cmake -S . -B /tmp/renderers/cpp -G Ninja -DCMAKE_BUILD_TYPE=Debug
-cmake --build /tmp/renderers/cpp
-/tmp/renderers/cpp/cpp-appkit
-/tmp/renderers/cpp/cpp-metal
+cmake -S 0002-first-triangle -B /tmp/renderers/0002-cpp -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build /tmp/renderers/0002-cpp
+/tmp/renderers/0002-cpp/cpp-metal-triangle
 ```
 
-The CMake project compiles with ARC, `-Wall -Wextra -Wpedantic -Werror`, and an
+The CMake projects compile with ARC, `-Wall -Wextra -Wpedantic -Werror`, and an
 optional `ENABLE_SANITIZERS=ON` AddressSanitizer/UndefinedBehaviorSanitizer
 configuration. Run the complete C++ check from the repository root:
 

@@ -3,7 +3,8 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-task_root="$repo_root/0001-empty-launch-window"
+task_0001="$repo_root/0001-empty-launch-window"
+task_0002="$repo_root/0002-first-triangle"
 build_root="${RENDERERS_BUILD_ROOT:-/tmp/renderers}"
 
 if [[ "$build_root" != /* || "$build_root" == "/" || "$build_root" == "$repo_root" ||
@@ -20,12 +21,9 @@ Builds and runs one variant with artifacts under:
   $build_root
 
 Variants:
-  swift-appkit
-  swift-metal
-  rust-appkit
-  rust-metal
-  cpp-appkit
-  cpp-metal
+  0001: swift-appkit (frozen), swift-metal (frozen),
+        rust-appkit, rust-metal, cpp-appkit, cpp-metal
+  0002: rust-metal-triangle, cpp-metal-triangle
 
 Override the build root with RENDERERS_BUILD_ROOT.
 EOF
@@ -38,25 +36,49 @@ fi
 
 variant="$1"
 
+run_swift() {
+    local task_dir="$1"
+    local name="$2"
+    echo "building $name with SwiftPM scratch path $build_root/$name"
+    cd "$task_dir/$name"
+    exec swift run --scratch-path "$build_root/$name"
+}
+
+run_rust() {
+    local task_dir="$1"
+    local name="$2"
+    echo "building $name with Cargo target dir $build_root/$name-target"
+    cd "$task_dir"
+    CARGO_TARGET_DIR="$build_root/$name-target" exec cargo run -p "$name"
+}
+
+run_cpp() {
+    local task_dir="$1"
+    local name="$2"
+    # A dedicated build dir per variant so concurrent run.sh calls do not race
+    # CMake's configure step. The check scripts still build all targets in one dir.
+    local build_dir="$build_root/$name"
+    echo "building $name with CMake build dir $build_dir"
+    cmake -S "$task_dir" -B "$build_dir" -G Ninja -DCMAKE_BUILD_TYPE=Debug
+    cmake --build "$build_dir" --target "$name"
+    exec "$build_dir/$name"
+}
+
 case "$variant" in
     swift-appkit | swift-metal)
-        echo "building $variant with SwiftPM scratch path $build_root/$variant"
-        cd "$task_root/$variant"
-        exec swift run --scratch-path "$build_root/$variant"
+        run_swift "$task_0001" "$variant"
         ;;
     rust-appkit | rust-metal)
-        echo "building $variant with Cargo target dir $build_root/rust-target"
-        cd "$task_root"
-        CARGO_TARGET_DIR="$build_root/rust-target" exec cargo run -p "$variant"
+        run_rust "$task_0001" "$variant"
         ;;
     cpp-appkit | cpp-metal)
-        # Separate build dirs so concurrent run.sh calls do not race CMake's
-        # configure step. check-cpp.sh still builds both targets in one dir.
-        build_dir="$build_root/$variant"
-        echo "building $variant with CMake build dir $build_dir"
-        cmake -S "$task_root" -B "$build_dir" -G Ninja -DCMAKE_BUILD_TYPE=Debug
-        cmake --build "$build_dir" --target "$variant"
-        exec "$build_dir/$variant"
+        run_cpp "$task_0001" "$variant"
+        ;;
+    rust-metal-triangle)
+        run_rust "$task_0002" "$variant"
+        ;;
+    cpp-metal-triangle)
+        run_cpp "$task_0002" "$variant"
         ;;
     *)
         usage >&2

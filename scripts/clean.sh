@@ -5,6 +5,7 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 task_root="$repo_root/0001-empty-launch-window"
+task_0002="$repo_root/0002-first-triangle"
 build_root="${RENDERERS_BUILD_ROOT:-/tmp/renderers}"
 dry_run=false
 
@@ -75,6 +76,11 @@ in_repo_paths=(
     "$task_root/build-cpp"
     "$task_root/build-cpp-asan"
     "$task_root/build"
+    "$task_0002/target"
+    "$task_0002/rust-metal/target"
+    "$task_0002/build"
+    "$task_0002/build-cpp"
+    "$task_0002/build-cpp-asan"
 )
 
 for path in "${in_repo_paths[@]}"; do
