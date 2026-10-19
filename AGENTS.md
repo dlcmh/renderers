@@ -20,6 +20,8 @@ shared frameworks or cross-task abstractions until a second task needs them.
 
 - `0001-empty-launch-window/swift-appkit` is complete: an AppKit window with a
   black, CPU-drawn content view.
+- `0001-empty-launch-window/swift-metal` is complete: a `CAMetalLayer`-backed
+  window cleared to dark blue by a Metal render pass.
 - There are no tests, CI workflows, or shared libraries yet.
 - Task numbers are derived from the top-level directories. After `0001`, the next
   new task is expected to be `0002-<kebab-name>`.
@@ -83,7 +85,8 @@ swift build
 swift run
 ```
 
-The debug binary is `.build/debug/EmptyGameWindow`. Release builds use
+The debug binary is `.build/debug/EmptyGameWindow` in the AppKit variant and
+`.build/debug/MetalLaunchWindow` in the Metal variant. Release builds use
 `swift build -c release`. Run `swift test` when a test target exists.
 
 ### Verifying a GUI launch

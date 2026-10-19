@@ -7,7 +7,7 @@ task is self-contained and runnable; the repository is not a shared library.
 
 | # | Task | Variants | Status |
 | --- | --- | --- | --- |
-| 0001 | [Empty launch window](0001-empty-launch-window/README.md) | Swift (AppKit) | Complete |
+| 0001 | [Empty launch window](0001-empty-launch-window/README.md) | Swift (AppKit), Swift (Metal) | Complete |
 
 New tasks get the next unused four-digit number and a kebab-case name. See
 [AGENTS.md](AGENTS.md) for the full conventions and agent workflow.
@@ -15,12 +15,17 @@ New tasks get the next unused four-digit number and a kebab-case name. See
 ## Quick start
 
 ```sh
-cd 0001-empty-launch-window/swift-appkit
+cd 0001-empty-launch-window/swift-appkit # CPU-drawn baseline
 swift run
 ```
 
-A centered, resizable 1280×720 window opens with a black surface. Close it,
-press Escape, or press ⌘Q to quit.
+```sh
+cd 0001-empty-launch-window/swift-metal # GPU-backed variant
+swift run
+```
+
+Both open a centered, resizable 1280×720 window. The AppKit window is black; the
+Metal window is dark blue. Close either window, press Escape, or press ⌘Q to quit.
 
 ## Requirements
 

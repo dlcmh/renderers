@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-metal}",
+            "name": "Debug MetalLaunchWindow",
+            "target": "MetalLaunchWindow",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug MetalLaunchWindow"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-metal}",
+            "name": "Release MetalLaunchWindow",
+            "target": "MetalLaunchWindow",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release MetalLaunchWindow"
+        }
+    ]
+}

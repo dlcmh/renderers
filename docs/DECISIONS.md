@@ -124,3 +124,55 @@ is visible in the directory tree. Links, run commands, and workspace settings
 must be updated when a variant is renamed. Git's rename detection preserves the
 file history.
 
+## ADR-0006 — Teach with `CAMetalLayer`, not `MTKView`
+
+- **Date:** 2026-10-19
+- **Status:** Accepted
+- **Task:** `0001-empty-launch-window/swift-metal`
+
+### Context
+
+The repository is teaching material for writing renderers from scratch. MetalKit's
+`MTKView` hides drawable management and the draw/display loop behind a convenient
+subclass. The first Metal example should expose the pieces a renderer actually
+needs to understand.
+
+### Decision
+
+Back an `NSView` with a `CAMetalLayer` directly. Create the `MTLDevice` and
+`MTLCommandQueue` explicitly, acquire drawables with `nextDrawable()`, encode a
+render pass that clears the drawable, then present and commit. Do not introduce
+`MTKView`, shaders, pipelines, or geometry in this first variant.
+
+### Consequences
+
+The example has more boilerplate than an `MTKView` sample, but every object's role
+is visible. Later tasks can add a render pipeline and draw calls without replacing
+the windowing layer. `MTKView` can be introduced later as a convenience
+alternative, with a comparison to this explicit path.
+
+## ADR-0007 — Compare launch paths inside task 0001
+
+- **Date:** 2026-10-19
+- **Status:** Accepted
+
+### Context
+
+The Metal clear is a second way to satisfy the same objective as the existing
+AppKit window, not a new rendering capability. Keeping both under one task makes
+the CPU/GPU delta directly comparable.
+
+### Decision
+
+Keep both implementations in `0001-empty-launch-window`: `swift-appkit` and
+`swift-metal`. The task README defines shared acceptance criteria, while each
+variant README explains its implementation and links to the other. New
+capabilities, such as drawing a triangle, receive a new task number.
+
+### Consequences
+
+The directory tree makes the comparison obvious and both variants can be run
+side by side. The variants intentionally duplicate app-lifecycle code; shared
+abstractions remain deferred until a later task proves the need.
+
+

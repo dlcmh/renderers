@@ -8,49 +8,61 @@ Part of the [renderers](../README.md) task series. Repository rules:
 
 ## Goal
 
-Prove the local macOS toolchain can build and launch a native game-window shell.
+Prove the local macOS toolchain can build and launch a native game-window shell,
+and compare the CPU-drawn AppKit path with a GPU-backed Metal path.
 
 ## Non-goals
 
-- Rendering anything beyond a black background.
+- Rendering geometry, shaders, or assets.
 - Input handling beyond quitting.
-- Game loops, Metal/OpenGL setup, or asset loading.
+- A continuous animation or game loop.
+- A cross-platform windowing abstraction.
 
 ## Variants
 
-| Language | Path | Run |
-| --- | --- | --- |
-| Swift / AppKit | [`swift-appkit/`](swift-appkit/) | `cd swift-appkit && swift run` |
+| Stack | Path | Run | Surface |
+| --- | --- | --- | --- |
+| Swift / AppKit | [`swift-appkit/`](swift-appkit/) | `cd swift-appkit && swift run` | Black, CPU-drawn |
+| Swift / Metal | [`swift-metal/`](swift-metal/) | `cd swift-metal && swift run` | Dark blue, GPU clear |
 
 ## Acceptance criteria
 
-- [x] `swift build` succeeds from a clean checkout.
-- [x] `swift run` opens a centered, resizable 1280×720 window.
-- [x] The window content is an empty black surface.
+- [x] Each variant builds with `swift build`.
+- [x] Each variant opens a centered, resizable 1280×720 window.
+- [x] AppKit fills the content view black; Metal clears a drawable to dark blue.
 - [x] Closing the window, pressing Escape, or pressing ⌘Q quits the app.
-- [x] The window is reported on screen with layer 0 by the window server.
+- [x] Each window is reported on screen with layer 0 by the window server.
 
 ## Verification
 
-1. Build and launch:
+Build and launch each variant from its directory:
 
-   ```sh
-   cd swift
-   swift build
-   .build/debug/EmptyGameWindow
-   ```
+```sh
+cd swift-appkit
+swift build
+.build/debug/EmptyGameWindow
+```
 
-2. Confirm the window through the macOS window server. A temporary
-   `CGWindowListCopyWindowInfo` script reported an on-screen window owned by
-   `EmptyGameWindow` with layer 0 and a 1280×752 outer frame (720pt content plus
-   title bar).
-3. Quit the app; no process is left running.
+```sh
+cd swift-metal
+swift build
+.build/debug/MetalLaunchWindow
+```
+
+Confirm each window through the macOS window server. A temporary
+`CGWindowListCopyWindowInfo` script reported an on-screen window owned by the
+running binary with layer 0 and a 1280×752 outer frame (720pt content plus title
+bar). Quit the app afterward; no process should remain.
 
 Screen capture was unavailable because Screen Recording permission was not
-granted; this does not affect the app.
+granted; this does not affect the apps.
 
 ## Notes
 
-- SwiftPM executable target, AppKit only, macOS 14 deployment target.
-- `Sources/EmptyGameWindow/main.swift` contains the app delegate, window setup,
-  and `GameView`, the placeholder drawing surface for future rendering tasks.
+- Both are SwiftPM executables with a macOS 14 deployment target and no
+  third-party dependencies.
+- The variants intentionally duplicate window and app-lifecycle code so each can
+  be read in isolation. Shared abstractions are deferred until a later task
+  demonstrates the need.
+- Deeper Metal teaching notes live in the
+  [Metal variant README](swift-metal/README.md).
