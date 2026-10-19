@@ -7,7 +7,7 @@ task is self-contained and runnable; the repository is not a shared library.
 
 | # | Task | Variants | Status |
 | --- | --- | --- | --- |
-| 0001 | [Empty launch window](0001-empty-launch-window/README.md) | Swift | Complete |
+| 0001 | [Empty launch window](0001-empty-launch-window/README.md) | Swift (AppKit) | Complete |
 
 New tasks get the next unused four-digit number and a kebab-case name. See
 [AGENTS.md](AGENTS.md) for the full conventions and agent workflow.
@@ -15,7 +15,7 @@ New tasks get the next unused four-digit number and a kebab-case name. See
 ## Quick start
 
 ```sh
-cd 0001-empty-launch-window/swift
+cd 0001-empty-launch-window/swift-appkit
 swift run
 ```
 

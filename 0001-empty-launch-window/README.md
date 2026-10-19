@@ -20,7 +20,7 @@ Prove the local macOS toolchain can build and launch a native game-window shell.
 
 | Language | Path | Run |
 | --- | --- | --- |
-| Swift | [`swift/`](swift/) | `cd swift && swift run` |
+| Swift / AppKit | [`swift-appkit/`](swift-appkit/) | `cd swift-appkit && swift run` |
 
 ## Acceptance criteria
 

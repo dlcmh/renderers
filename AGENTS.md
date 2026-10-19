@@ -18,8 +18,8 @@ shared frameworks or cross-task abstractions until a second task needs them.
 
 ## Current state
 
-- `0001-empty-launch-window/swift` is complete: an AppKit window with a black,
-  empty content view.
+- `0001-empty-launch-window/swift-appkit` is complete: an AppKit window with a
+  black, CPU-drawn content view.
 - There are no tests, CI workflows, or shared libraries yet.
 - Task numbers are derived from the top-level directories. After `0001`, the next
   new task is expected to be `0002-<kebab-name>`.
@@ -40,7 +40,10 @@ Naming rules:
   `0002-draw-triangle`.
 - Never reuse, renumber, or recycle a task directory. New work gets a new number.
 - Language directories use lowercase canonical names: `swift`, `rust`, `c`,
-  `cpp`, `metal`, `python`, etc.
+  `cpp`, `python`, etc.
+- When one language has multiple meaningful implementations in a task, qualify
+  the directory with the backend: `swift-appkit`, `swift-metal`, `rust-winit`,
+  `rust-wgpu`, etc. See ADR-0005.
 - Assets shared by all variants live at the task root; variant-specific assets
   stay inside that variant's directory.
 - Every task contains a `README.md`; every language variant must be runnable on
@@ -75,7 +78,7 @@ already available. Otherwise make the smallest reasonable choice and record it.
 Use the commands documented in each language README. For the current Swift task:
 
 ```sh
-cd 0001-empty-launch-window/swift
+cd 0001-empty-launch-window/swift-appkit
 swift build
 swift run
 ```

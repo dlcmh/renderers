@@ -96,3 +96,31 @@ definition of done.
 
 Agents need a short runtime check for each GUI task, but can distinguish real
 application failures from screen-capture permission limits.
+
+## ADR-0005 — Backend-qualified variant directories
+
+- **Date:** 2026-10-19
+- **Status:** Accepted
+
+### Context
+
+A task can be solved more than once in the same language with materially
+different platform APIs. The original `swift` directory in task 0001 contains an
+AppKit, CPU-drawn window, and a Metal, GPU-backed variant is being added for
+comparison. A bare language name would no longer identify the implementation.
+
+### Decision
+
+Qualify a variant directory with its backend when one language has multiple
+meaningful implementations in a task: `swift-appkit`, `swift-metal`,
+`rust-winit`, `rust-wgpu`. Rename `0001-empty-launch-window/swift` to
+`swift-appkit`. A bare language name remains valid when there is only one
+implementation in that language.
+
+### Consequences
+
+Paths and IDE workspace names become self-describing, and the old/new comparison
+is visible in the directory tree. Links, run commands, and workspace settings
+must be updated when a variant is renamed. Git's rename detection preserves the
+file history.
+
