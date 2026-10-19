@@ -14,6 +14,11 @@ the vocabulary used throughout the repo — backend, RHI, surface, swapchain,
 pipeline — and explains the platform tradeoffs, including Vulkan versus Direct3D
 on Windows and the HarmonyOS host model.
 
+For where the project is heading — GPU-only rendering, a Vulkan backend for
+non-Apple and Chinese GPUs, a separate compute seam, and what GPU-accelerated
+Rust terminals teach — read
+[Strategic direction](docs/STRATEGY.md).
+
 ## Tasks
 
 | # | Task | Variants | Status |

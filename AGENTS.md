@@ -58,6 +58,9 @@ make a concept obvious to a reader who has not used the API before.
 - `0001-empty-launch-window/cpp-metal` is complete: the Metal clear written in
   Objective-C++ with ARC.
 - There are no tests, CI workflows, or shared libraries yet.
+- **Direction:** new rendering work is GPU-only (ADR-0012). The CPU AppKit
+  variants stay as baselines. The next backend after Metal is Vulkan, behind a
+  first-cut RHI; compute, if added, stays behind a separate seam (ADR-0013).
 - Task numbers are derived from the top-level directories. After `0001`, the next
   new task is expected to be `0002-<kebab-name>`.
 
@@ -260,6 +263,10 @@ Remove all known build artifacts, including the external root:
   guide. Update it when terminology, platform assumptions, or the
   from-scratch/binding policy changes. Link to it when explaining concepts rather
   than re-deriving definitions in each task.
+- **`docs/STRATEGY.md`:** the strategic direction. New rendering work is GPU-only;
+  the CPU AppKit variants are baselines. Update it when the direction, backend
+  order, or compute policy changes, and record the corresponding ADR in
+  `docs/DECISIONS.md`.
 - Update this file when working conventions change.
 
 ## Definition of done

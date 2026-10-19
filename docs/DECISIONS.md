@@ -315,3 +315,74 @@ The C++ variants are macOS-specific Objective-C++ rather than portable standard
 C++. That is deliberate: the shared RHI boundary remains a future layer above the
 platform APIs. CMake build directories stay out of git, and adding another C++
 variant means adding one target and one source file.
+
+## ADR-0012 — Go GPU-only for new rendering work
+
+- **Date:** 2026-10-19
+- **Status:** Accepted
+- **Supersedes for scope:** the CPU half of the task-0001 comparisons, as a
+  direction for future work only. The AppKit baselines remain in the repository.
+
+### Context
+
+Task 0001 proved that the same window can be produced by CPU drawing or by a GPU
+render pass in four languages. The maintainer's goal is to learn renderer
+architecture across platforms and accelerators, and the CPU path does not scale
+toward that goal: it serializes per-pixel work on the CPU and cannot express
+shaders, pipelines, or compute.
+
+### Decision
+
+All new rendering work targets the GPU. The CPU/AppKit variants stay as teaching
+baselines and historical comparisons, but no new renderer features are added to
+them. The platform layer (window plus native surface) remains explicit and
+per-OS; "GPU-only" refers to the pixel-producing path, not to discarding the
+native host.
+
+Reasoning and the wider accelerator analysis are documented in
+[docs/STRATEGY.md](STRATEGY.md).
+
+### Consequences
+
+The learning path proceeds through shader pipelines, frame loops, depth and
+cameras, and then a Vulkan backend. Fewer divergences between variants are
+expected, because future work concentrates on the GPU path. Task READMEs that
+describe CPU variants should label them as baselines rather than targets.
+
+## ADR-0013 — Portability rests on standard APIs, not vendor ecosystems
+
+- **Date:** 2026-10-19
+- **Status:** Accepted
+
+### Context
+
+Chinese hardware vendors, NPUs, and vendor compute ecosystems are multiplying.
+Moore Threads, Lisuan, and similar vendors increasingly ship Vulkan, Direct3D, and
+OpenGL drivers, while vendor compute ecosystems (CUDA, CANN, MUSA, and others) and
+NPUs do not expose a portable graphics API. Rust terminals and other GPU-heavy
+tools also rely on portable GPU abstractions for shipping.
+
+### Decision
+
+- Continue implementing the graphics path against native standard APIs (Metal,
+  then Vulkan), behind our own RHI seam.
+- Treat Vulkan as the primary multi-platform backend, including for non-Western
+  GPU vendors and HarmonyOS; validate driver conformance on real hardware rather
+  than assuming parity.
+- Keep compute behind a separate, narrow seam. Target Vulkan compute or WebGPU
+  compute; do not integrate vendor compute SDKs or NPU APIs into the renderer core.
+- Keep `wgpu` out of the learning variants but recognize it as the pragmatic
+  shipping path and as a reference architecture, especially for terminal-style GPU
+  rendering.
+- Do not treat terminal GPU acceleration as a separate direction; it is the same
+  submission-model problem with different latency and pacing priorities.
+
+The supporting analysis lives in [docs/STRATEGY.md](STRATEGY.md).
+
+### Consequences
+
+The repository remains a from-scratch learning project while staying compatible
+with the platforms that are likely to matter. Compute and NPU support, if added
+later, will be adapters rather than core dependencies. Accepting Vulkan as the
+next backend implies a future task for a first-cut RHI and a Vulkan implementation
+of the same triangle.

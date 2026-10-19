@@ -19,6 +19,11 @@ and compare six implementations of the same objective:
 The Rust and C++ variants are direct ports, not wrappers around a windowing or
 rendering framework.
 
+**Direction:** the CPU/AppKit variants are baselines for comparison only. New
+rendering work in this repository is GPU-only; see
+[Strategic direction](../docs/STRATEGY.md) and ADR-0012 in
+[docs/DECISIONS.md](../docs/DECISIONS.md).
+
 ## Non-goals
 
 - Rendering geometry, shaders, or assets.

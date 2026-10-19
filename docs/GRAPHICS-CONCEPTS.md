@@ -305,6 +305,24 @@ portability.
 | Android | Java/Kotlin + JNI / NativeActivity | Vulkan, OpenGL ES | Device support and driver quality vary widely. |
 | HarmonyOS Next | ArkTS / ArkUI | Vulkan (native), OpenGL ES | Native code loads via NAPI; custom surfaces use XComponent. See below. |
 | Web | Browser | WebGPU, WebGL | No direct native API access; the browser owns the device. |
+| Chinese discrete GPUs | Windows (mostly) | Vulkan, D3D12, OpenGL; vendor compute (MUSA, CANN, etc.) | Vendors such as Moore Threads and Lisuan ship mainstream APIs; driver maturity and power efficiency still lag. |
+| Terminals | Native app window | Whatever the host uses (often `wgpu`) | GPU-accelerated terminals are the same renderer problem in text form. |
+
+### Accelerators are not all GPUs
+
+Hardware is splitting along three lines, and they portability behave very
+differently:
+
+| Category | Examples | Portable API? |
+| --- | --- | --- |
+| Mainstream GPU with standard APIs | AMD, NVIDIA, Intel, Apple, Chinese GPU vendors | Yes: Metal, Vulkan, D3D12 on the OS side |
+| Vendor GPU compute ecosystem | CUDA, ROCm/HIP, Level Zero, MUSA, CANN, BANG | No; vendor-specific |
+| Dedicated AI accelerator (NPU) | Apple Neural Engine, Qualcomm Hexagon, Huawei Da Vinci | No; usually behind vendor SDKs and compilers |
+
+The graphics path still has a cross-vendor API surface. The compute path does not,
+beyond Vulkan compute and WebGPU compute. Keep graphics and compute behind
+separate seams, and do not target a vendor compute SDK from core renderer code.
+For the strategic direction behind this, see [docs/STRATEGY.md](STRATEGY.md).
 
 ### Vulkan on Windows
 
@@ -328,6 +346,13 @@ D3D12 can be a later third backend if Windows/Xbox-specific features matter.
 macOS is the exception: there is no native Vulkan driver. MoltenVK translates
 Vulkan to Metal, but that adds a third-party translation layer. Native Metal is
 the right first Apple backend.
+
+A Vulkan backend is also the most realistic path to non-Western GPU vendors. Moore
+Threads added Vulkan support in its late-2025 driver line, Lisuan targets DirectX 12
+on Windows, and Huawei documents Vulkan for HarmonyOS. Driver quality and
+conformance on that hardware must be tested, not assumed. See
+[docs/STRATEGY.md](STRATEGY.md#the-standard-apis-are-the-portable-surface) for the
+sources and caveats.
 
 ## HarmonyOS Next specifics
 
@@ -456,10 +481,12 @@ library because the native boundary itself is part of the lesson; see
 | `raw-window-handle` | Common native-handle trait | Useful when a second platform lands |
 | `ohos-rs`, `napi-rs` | HarmonyOS/NAPI bindings | Evaluate when targeting HarmonyOS |
 | `winit` | Cross-platform window/event loop | Defer; hides native windowing |
-| `wgpu` | GPU abstraction over native APIs | Not for from-scratch backend learning |
+| `wgpu` | GPU abstraction over native APIs | Not for from-scratch backend learning; strong reference for shipping, and what GPU-accelerated Rust terminals typically use |
 
 Crate maturity and APIs change; re-check versions and maintenance status before
-adopting one.
+adopting one. For the strategic reading of when to use `wgpu` versus the
+from-scratch backends, see
+[docs/STRATEGY.md](STRATEGY.md#4-terminals-are-proving-the-same-point).
 
 ## Suggested learning path
 
