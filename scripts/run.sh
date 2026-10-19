@@ -50,10 +50,13 @@ case "$variant" in
         CARGO_TARGET_DIR="$build_root/rust-target" exec cargo run -p "$variant"
         ;;
     cpp-appkit | cpp-metal)
-        echo "building $variant with CMake build dir $build_root/cpp"
-        cmake -S "$task_root" -B "$build_root/cpp" -G Ninja -DCMAKE_BUILD_TYPE=Debug
-        cmake --build "$build_root/cpp" --target "$variant"
-        exec "$build_root/cpp/$variant"
+        # Separate build dirs so concurrent run.sh calls do not race CMake's
+        # configure step. check-cpp.sh still builds both targets in one dir.
+        build_dir="$build_root/$variant"
+        echo "building $variant with CMake build dir $build_dir"
+        cmake -S "$task_root" -B "$build_dir" -G Ninja -DCMAKE_BUILD_TYPE=Debug
+        cmake --build "$build_dir" --target "$variant"
+        exec "$build_dir/$variant"
         ;;
     *)
         usage >&2
