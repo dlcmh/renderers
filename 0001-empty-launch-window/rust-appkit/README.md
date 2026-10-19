@@ -11,18 +11,17 @@ variant, not a wrapper around a windowing framework.
 
 ## Run
 
-From this directory:
+From the repository root, with build artifacts under `/tmp/renderers`:
 
 ```sh
-cd 0001-empty-launch-window/rust-appkit
-cargo run
+./scripts/run.sh rust-appkit
 ```
 
-Or from the task workspace:
+Or invoke Cargo directly:
 
 ```sh
 cd 0001-empty-launch-window
-cargo run -p rust-appkit
+CARGO_TARGET_DIR=/tmp/renderers/rust-target cargo run -p rust-appkit
 ```
 
 A centered, resizable 1280×720 window opens with a black surface. Close the

@@ -16,13 +16,19 @@ cross-platform windowing library in between.
 
 ## Run
 
-From the task root:
+From the repository root, with build artifacts under `/tmp/renderers`:
+
+```sh
+./scripts/run.sh cpp-appkit
+```
+
+Or invoke CMake directly:
 
 ```sh
 cd 0001-empty-launch-window
-cmake -S . -B build-cpp -G Ninja -DCMAKE_BUILD_TYPE=Debug
-cmake --build build-cpp --target cpp-appkit
-./build-cpp/cpp-appkit
+cmake -S . -B /tmp/renderers/cpp -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build /tmp/renderers/cpp --target cpp-appkit
+/tmp/renderers/cpp/cpp-appkit
 ```
 
 A centered, resizable 1280×720 window opens with a black surface. Close the

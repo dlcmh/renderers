@@ -13,9 +13,17 @@ provides the standard Quit item so ⌘Q works.
 
 ## Run
 
+From the repository root, with build artifacts under `/tmp/renderers`:
+
+```sh
+./scripts/run.sh swift-appkit
+```
+
+Or invoke SwiftPM directly:
+
 ```sh
 cd 0001-empty-launch-window/swift-appkit
-swift run
+swift run --scratch-path /tmp/renderers/swift-appkit
 ```
 
 ## Structure

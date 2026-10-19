@@ -49,52 +49,24 @@ rendering framework.
 
 ## Verification
 
-Build and launch the Swift variants from their directories:
+Build and launch any variant from the repository root. The wrapper keeps all
+build artifacts under `/tmp/renderers`:
 
 ```sh
-cd swift-appkit
-swift build
-.build/debug/EmptyGameWindow
+./scripts/run.sh swift-appkit
+./scripts/run.sh swift-metal
+./scripts/run.sh rust-appkit
+./scripts/run.sh rust-metal
+./scripts/run.sh cpp-appkit
+./scripts/run.sh cpp-metal
 ```
 
-```sh
-cd swift-metal
-swift build
-.build/debug/MetalLaunchWindow
-```
-
-Build and launch the Rust variants from their directories:
+The underlying tool commands are documented in each variant README. The language
+checks also use the external build root:
 
 ```sh
-cd rust-appkit
-cargo run
-```
-
-```sh
-cd rust-metal
-cargo run
-```
-
-The full Rust check (fmt, clippy with warnings denied, build, test) runs from the
-repository root:
-
-```sh
+./scripts/check-swift.sh
 ./scripts/check-rust.sh
-```
-
-Build and launch the C++ variants from the task root:
-
-```sh
-cmake -S . -B build-cpp -G Ninja -DCMAKE_BUILD_TYPE=Debug
-cmake --build build-cpp
-./build-cpp/cpp-appkit
-./build-cpp/cpp-metal
-```
-
-The full C++ check (clang-format, warnings-as-errors builds, ASan/UBSan build)
-runs from the repository root:
-
-```sh
 ./scripts/check-cpp.sh
 ```
 
@@ -106,6 +78,13 @@ title bar). Quit each app afterward; no process should remain.
 
 Screen capture was unavailable because Screen Recording permission was not
 granted; this does not affect the apps.
+
+Remove all in-repo and external build artifacts with:
+
+```sh
+./scripts/clean.sh --dry-run
+./scripts/clean.sh
+```
 
 ## Notes
 
@@ -120,6 +99,9 @@ granted; this does not affect the apps.
   Objective-C APIs. They use ARC, one shared CMake project at the task root, and
   compile with `-Wall -Wextra -Wpedantic -Werror`. The check script also builds an
   AddressSanitizer/UndefinedBehaviorSanitizer configuration.
+- Builds are ephemeral: the helper scripts use `/tmp/renderers`, overridable with
+  `RENDERERS_BUILD_ROOT`. `scripts/clean.sh` removes the external root and any
+  legacy in-repo build directories.
 - The variants intentionally duplicate window and app-lifecycle code so each can
   be read in isolation. Shared abstractions are deferred until a later task
   demonstrates the need.

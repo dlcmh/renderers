@@ -10,18 +10,17 @@ the same as the Swift variant; only the host language and ownership model differ
 
 ## Run
 
-From this directory:
+From the repository root, with build artifacts under `/tmp/renderers`:
 
 ```sh
-cd 0001-empty-launch-window/rust-metal
-cargo run
+./scripts/run.sh rust-metal
 ```
 
-Or from the task workspace:
+Or invoke Cargo directly:
 
 ```sh
 cd 0001-empty-launch-window
-cargo run -p rust-metal
+CARGO_TARGET_DIR=/tmp/renderers/rust-target cargo run -p rust-metal
 ```
 
 A centered, resizable 1280×720 window opens with a dark blue surface. Close the

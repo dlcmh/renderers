@@ -25,35 +25,21 @@ New tasks get the next unused four-digit number and a kebab-case name. See
 
 ## Quick start
 
-Swift variants:
+Build artifacts stay outside the repository by default. The wrapper configures,
+builds, and runs one variant using the right toolchain:
 
 ```sh
-cd 0001-empty-launch-window/swift-appkit # CPU-drawn baseline
-swift run
+./scripts/run.sh swift-appkit
+./scripts/run.sh swift-metal
+./scripts/run.sh rust-appkit
+./scripts/run.sh rust-metal
+./scripts/run.sh cpp-appkit
+./scripts/run.sh cpp-metal
 ```
 
-```sh
-cd 0001-empty-launch-window/swift-metal # GPU-backed variant
-swift run
-```
-
-Rust variants:
-
-```sh
-cd 0001-empty-launch-window
-cargo run -p rust-appkit                  # CPU-drawn baseline
-cargo run -p rust-metal                   # GPU-backed variant
-```
-
-C++ variants:
-
-```sh
-cd 0001-empty-launch-window
-cmake -S . -B build-cpp -G Ninja -DCMAKE_BUILD_TYPE=Debug
-cmake --build build-cpp
-./build-cpp/cpp-appkit                    # CPU-drawn baseline
-./build-cpp/cpp-metal                     # GPU-backed variant
-```
+Artifacts go to `/tmp/renderers`. Override that location with
+`RENDERERS_BUILD_ROOT`. Each variant README documents the underlying compiler
+commands.
 
 All six open a centered, resizable 1280×720 window. AppKit windows are black;
 Metal windows are dark blue. Close a window, press Escape, or press ⌘Q to quit.
@@ -62,6 +48,19 @@ Start with the Swift CPU baseline, then read [the Metal notes](0001-empty-launch
 for the comparison between `draw(_:)` and an explicit GPU render pass. The Rust
 and C++ variants mirror the pair and show the same AppKit/Metal concepts through
 their FFI boundaries.
+
+## Cleanup
+
+Preview and remove every artifact this repo knows how to create, including the
+external build root:
+
+```sh
+./scripts/clean.sh --dry-run
+./scripts/clean.sh
+```
+
+The script only removes known build paths; it does not touch source files. The
+external root is configurable with `RENDERERS_BUILD_ROOT`.
 
 ## Requirements
 
@@ -74,9 +73,10 @@ their FFI boundaries.
 The current setup was verified with macOS 26.6.2, Swift 6.3.3, Rust 1.97.1,
 Apple Clang 21.0.0, and CMake 4.4.4 on arm64.
 
-Run the language checks with:
+Run the language checks with (all use the external build root):
 
 ```sh
+./scripts/check-swift.sh
 ./scripts/check-rust.sh
 ./scripts/check-cpp.sh
 ```
@@ -86,6 +86,8 @@ Run the language checks with:
 - One numbered directory per task: `NNNN-kebab-case-task/`.
 - Each task has a README with its goal, acceptance criteria, and status.
 - Each language variant is independent and has its own run instructions.
+- Builds default to `/tmp/renderers`; `scripts/clean.sh` removes all known
+  artifacts, including the external build root.
 - Durable decisions are recorded in [docs/DECISIONS.md](docs/DECISIONS.md).
 - Completed, verified work is committed and pushed to `origin/main`.
 

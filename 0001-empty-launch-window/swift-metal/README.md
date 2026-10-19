@@ -53,9 +53,17 @@ Three lifetimes matter:
 
 ## Run
 
+From the repository root, with build artifacts under `/tmp/renderers`:
+
+```sh
+./scripts/run.sh swift-metal
+```
+
+Or invoke SwiftPM directly:
+
 ```sh
 cd 0001-empty-launch-window/swift-metal
-swift run
+swift run --scratch-path /tmp/renderers/swift-metal
 ```
 
 A centered, resizable 1280×720 window opens with a dark blue surface. Close it,

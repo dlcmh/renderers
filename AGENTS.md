@@ -112,30 +112,47 @@ already available. Otherwise make the smallest reasonable choice and record it.
 
 ## Build, run, and verify
 
-Use the commands documented in each language README. For the current Swift task:
+Use the commands documented in each language README. Builds are ephemeral by
+default: helper scripts put artifacts under `/tmp/renderers`, overridable with
+`RENDERERS_BUILD_ROOT`. Run any variant from the repository root with:
+
+```sh
+./scripts/run.sh <variant>
+```
+
+Variants: `swift-appkit`, `swift-metal`, `rust-appkit`, `rust-metal`,
+`cpp-appkit`, `cpp-metal`.
+
+For the current Swift task, the underlying commands are:
 
 ```sh
 cd 0001-empty-launch-window/swift-appkit
-swift build
-swift run
+swift run --scratch-path /tmp/renderers/swift-appkit
 ```
 
-The debug binary is `.build/debug/EmptyGameWindow` in the AppKit variant and
-`.build/debug/MetalLaunchWindow` in the Metal variant. Release builds use
-`swift build -c release`. Run `swift test` when a test target exists.
+The debug binary is under the scratch path:
+`/tmp/renderers/swift-appkit/debug/EmptyGameWindow` and
+`/tmp/renderers/swift-metal/debug/MetalLaunchWindow`. Run the Swift check — which
+builds both variants into the external root — from the repository root:
+
+```sh
+./scripts/check-swift.sh
+```
+
+Run `swift test` when a test target exists.
 
 The Rust variants live in a Cargo workspace at
 `0001-empty-launch-window/Cargo.toml`:
 
 ```sh
 cd 0001-empty-launch-window
-cargo run -p rust-appkit
-cargo run -p rust-metal
+CARGO_TARGET_DIR=/tmp/renderers/rust-target cargo run -p rust-appkit
+CARGO_TARGET_DIR=/tmp/renderers/rust-target cargo run -p rust-metal
 ```
 
-The workspace target directory is `0001-empty-launch-window/target/`. `Cargo.lock`
-is committed because these are binaries. Run the complete Rust check — formatting,
-Clippy with warnings denied, build, and test — from the repository root:
+`Cargo.lock` is committed because these are binaries. Run the complete Rust check
+— formatting, Clippy with warnings denied, build, and test — from the repository
+root:
 
 ```sh
 ./scripts/check-rust.sh
@@ -146,10 +163,10 @@ The C++ variants share one CMake project at
 
 ```sh
 cd 0001-empty-launch-window
-cmake -S . -B build-cpp -G Ninja -DCMAKE_BUILD_TYPE=Debug
-cmake --build build-cpp
-./build-cpp/cpp-appkit
-./build-cpp/cpp-metal
+cmake -S . -B /tmp/renderers/cpp -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build /tmp/renderers/cpp
+/tmp/renderers/cpp/cpp-appkit
+/tmp/renderers/cpp/cpp-metal
 ```
 
 The CMake project compiles with ARC, `-Wall -Wextra -Wpedantic -Werror`, and an
@@ -158,6 +175,13 @@ configuration. Run the complete C++ check from the repository root:
 
 ```sh
 ./scripts/check-cpp.sh
+```
+
+Remove all known build artifacts, including the external root:
+
+```sh
+./scripts/clean.sh --dry-run
+./scripts/clean.sh
 ```
 
 ### Rust conventions
@@ -188,8 +212,9 @@ configuration. Run the complete C++ check from the repository root:
 - Format with the repository `.clang-format`. `scripts/check-cpp.sh` runs
   `clang-format --dry-run --Werror` and builds both the normal and sanitizer
   configurations.
-- Keep CMake build directories out of git; root `.gitignore` covers `build/` and
-  `build-*/`.
+- Keep CMake build directories out of git. The helper scripts use the external
+  `/tmp/renderers` root by default; legacy `build/` and `build-*` paths remain
+  ignored.
 
 ### Verifying a GUI launch
 

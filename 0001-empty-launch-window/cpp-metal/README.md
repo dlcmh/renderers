@@ -12,13 +12,19 @@ syntax directly.
 
 ## Run
 
-From the task root:
+From the repository root, with build artifacts under `/tmp/renderers`:
+
+```sh
+./scripts/run.sh cpp-metal
+```
+
+Or invoke CMake directly:
 
 ```sh
 cd 0001-empty-launch-window
-cmake -S . -B build-cpp -G Ninja -DCMAKE_BUILD_TYPE=Debug
-cmake --build build-cpp --target cpp-metal
-./build-cpp/cpp-metal
+cmake -S . -B /tmp/renderers/cpp -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build /tmp/renderers/cpp --target cpp-metal
+/tmp/renderers/cpp/cpp-metal
 ```
 
 A centered, resizable 1280×720 window opens with a dark blue surface. Close the
