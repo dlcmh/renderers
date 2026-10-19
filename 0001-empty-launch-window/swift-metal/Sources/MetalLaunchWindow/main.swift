@@ -7,9 +7,8 @@ import QuartzCore
 /// A layer-hosting view whose backing layer is a `CAMetalLayer`.
 ///
 /// AppKit still owns the window and the event loop; only the pixels change hands.
-/// Instead of AppKit asking the view to fill a CPU bitmap in `draw(_:)`, Core
-/// Animation asks the layer for its next drawable texture and the GPU renders
-/// into it.
+/// Instead of AppKit asking the view to fill a CPU bitmap in `draw(_:)`, we ask
+/// the layer for its next drawable texture and the GPU renders into it.
 final class MetalView: NSView {
     private let commandQueue: MTLCommandQueue
     private let metalLayer: CAMetalLayer
@@ -30,10 +29,10 @@ final class MetalView: NSView {
         // server composites. It is the bridge between AppKit and Metal.
         let layer = CAMetalLayer()
         layer.device = device
-        layer.pixelFormat = .bgra8Unorm // native 8-bit swapchain format
-        layer.framebufferOnly = true    // render only; no compute or CPU readback
+        layer.pixelFormat = .bgra8Unorm // common 8-bit non-sRGB drawable format
+        layer.framebufferOnly = true    // drawable textures are render targets only
         layer.isOpaque = true
-        layer.maximumDrawableCount = 3  // enough drawables for triple buffering
+        layer.maximumDrawableCount = 3  // pool size; a frame loop needs a semaphore
         self.metalLayer = layer
 
         super.init(frame: frameRect)

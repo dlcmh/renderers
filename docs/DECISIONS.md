@@ -175,4 +175,31 @@ The directory tree makes the comparison obvious and both variants can be run
 side by side. The variants intentionally duplicate app-lifecycle code; shared
 abstractions remain deferred until a later task proves the need.
 
+## ADR-0008 — Teaching-first code, docs, and commits
+
+- **Date:** 2026-10-19
+- **Status:** Accepted
+
+### Context
+
+The repository exists to learn cross-platform game renderer construction from
+first principles. Code that merely works can still hide the mechanism; a large
+single commit can also make the new idea hard to isolate. The maintainer values
+conceptual clarity and honest performance comparisons.
+
+### Decision
+
+Treat every task as teaching material. Prefer explicit mechanisms over framework
+convenience when the convenience hides the concept. When new code supersedes or
+improves an older approach, its README compares the two, including costs and when
+the old approach remains appropriate. Performance statements must be qualified or
+measured. Put explanatory comments at non-obvious points, and prefer a short
+series of commits that each isolate one conceptual delta.
+
+### Consequences
+
+Tasks take slightly longer to document, but they remain useful as reference
+material. New implementations live in their own variant directories, and existing
+folders may be renamed when a clearer comparison requires it. The AppKit-versus-
+Metal comparison in task 0001 is the reference example for future tasks.
 

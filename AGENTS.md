@@ -16,6 +16,33 @@ and leave behind runnable code plus enough context for the next agent.
 Optimize for a complete, verifiable result over architecture. Do not introduce
 shared frameworks or cross-task abstractions until a second task needs them.
 
+## Teaching standards
+
+This repository is learning material, not a production codebase. The code should
+make a concept obvious to a reader who has not used the API before.
+
+- **One concept per task.** A task should introduce one new capability or one new
+  implementation strategy. Do not hide the lesson among unrelated changes.
+- **Show the mechanism.** Prefer explicit code over framework magic when the
+  framework would obscure what the GPU or window system is doing. Mention the
+  convenient alternative and when to use it.
+- **Compare old and new.** When an implementation is a better, faster, or more
+  scalable way to achieve an existing objective, its README must compare and
+  contrast with the older approach: what changed, why it matters, and what it
+  costs. The AppKit-versus-Metal variant is the model.
+- **Be honest about performance.** State when a new path is not actually faster
+  for the current workload, identify the workload where it wins, and avoid
+  benchmarks or claims that were not measured.
+- **Comment the why.** Put comments at the points where a reader needs the mental
+  model: object lifetime, synchronization, units, and non-obvious state. Do not
+  narrate syntax.
+- **Make commits teach.** Prefer a small series of commits that each isolate one
+  conceptual delta (for example: restructure, then working code, then the
+  comparison) over one opaque commit. Commit messages should name the step.
+- **Give new work its own folder.** Put a new implementation in its own variant
+  directory, and restructure existing paths when a clearer name makes the
+  comparison easier to follow.
+
 ## Current state
 
 - `0001-empty-launch-window/swift-appkit` is complete: an AppKit window with a
