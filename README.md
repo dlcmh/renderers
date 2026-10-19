@@ -18,12 +18,14 @@ on Windows and the HarmonyOS host model.
 
 | # | Task | Variants | Status |
 | --- | --- | --- | --- |
-| 0001 | [Empty launch window](0001-empty-launch-window/README.md) | [Swift (AppKit)](0001-empty-launch-window/swift-appkit/), [Swift (Metal)](0001-empty-launch-window/swift-metal/) | Complete |
+| 0001 | [Empty launch window](0001-empty-launch-window/README.md) | [Swift (AppKit)](0001-empty-launch-window/swift-appkit/), [Swift (Metal)](0001-empty-launch-window/swift-metal/), [Rust (AppKit)](0001-empty-launch-window/rust-appkit/), [Rust (Metal)](0001-empty-launch-window/rust-metal/) | Complete |
 
 New tasks get the next unused four-digit number and a kebab-case name. See
 [AGENTS.md](AGENTS.md) for the full conventions and agent workflow.
 
 ## Quick start
+
+Swift variants:
 
 ```sh
 cd 0001-empty-launch-window/swift-appkit # CPU-drawn baseline
@@ -35,18 +37,35 @@ cd 0001-empty-launch-window/swift-metal # GPU-backed variant
 swift run
 ```
 
-Both open a centered, resizable 1280×720 window. The AppKit window is black; the
-Metal window is dark blue. Close either window, press Escape, or press ⌘Q to quit.
+Rust variants:
 
-Start with the CPU baseline, then read [the Metal notes](0001-empty-launch-window/swift-metal/README.md#the-delta-at-a-glance)
-for the comparison between `draw(_:)` and an explicit GPU render pass.
+```sh
+cd 0001-empty-launch-window
+cargo run -p rust-appkit                  # CPU-drawn baseline
+cargo run -p rust-metal                   # GPU-backed variant
+```
+
+All four open a centered, resizable 1280×720 window. AppKit windows are black;
+Metal windows are dark blue. Close a window or press Escape to quit.
+
+Start with the Swift CPU baseline, then read [the Metal notes](0001-empty-launch-window/swift-metal/README.md#the-delta-at-a-glance)
+for the comparison between `draw(_:)` and an explicit GPU render pass. The Rust
+variants mirror the pair and show the same AppKit/Metal concepts through FFI.
 
 ## Requirements
 
 - macOS 14 or newer
-- Swift 6 toolchain (Xcode Command Line Tools or Xcode)
+- Swift 6 toolchain (Xcode Command Line Tools or Xcode) for the Swift variants
+- Rust 1.85+ and Cargo for the Rust variants; the repository pins Rust 1.97.1
 
-The current setup was verified with macOS 26.6.2 and Swift 6.3.3 on arm64.
+The current setup was verified with macOS 26.6.2, Swift 6.3.3, and Rust 1.97.1 on
+arm64.
+
+Run the full Rust check with:
+
+```sh
+./scripts/check-rust.sh
+```
 
 ## Repository conventions
 

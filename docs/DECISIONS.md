@@ -243,3 +243,39 @@ risk of hand-maintaining Objective-C bindings. Portability is achieved through
 owned interfaces and a second backend, not through avoiding dependencies
 everywhere. HarmonyOS work will require a separate host project and may require
 more FFI effort than the macOS variants.
+
+## ADR-0010 — Rust workspace per task
+
+- **Date:** 2026-10-19
+- **Status:** Accepted
+- **Task:** `0001-empty-launch-window`
+
+### Context
+
+Task 0001 now has two Rust implementations with the same dependencies and tooling
+requirements. Giving each crate its own lockfile and target directory would
+duplicate builds, and running the linters separately invites drift.
+
+### Decision
+
+Use one Cargo workspace at the task root,
+`0001-empty-launch-window/Cargo.toml`, with `rust-appkit` and `rust-metal` as
+members. The workspace owns:
+
+- the shared `Cargo.lock`, committed because both members are binaries,
+- the shared `target/` directory, which is git-ignored,
+- workspace lints (`unsafe_op_in_unsafe_fn`, `unused_must_use`,
+  `undocumented_unsafe_blocks`),
+- the pinned toolchain in `rust-toolchain.toml` and `rustfmt.toml`,
+- the `scripts/check-rust.sh` verification entry point.
+
+Each member remains independently runnable with `cargo run -p <member>` or from
+its own directory.
+
+### Consequences
+
+Rust builds and checks are consistent across the variants, and adding another
+Rust variant means adding one workspace member and refreshing the lockfile. The
+mixed-language task root now contains a Cargo workspace alongside the Swift
+directories; Cargo only knows about its explicit members. Rust-specific tooling
+is documented in `AGENTS.md` so future variants follow the same pattern.

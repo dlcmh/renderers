@@ -49,6 +49,10 @@ make a concept obvious to a reader who has not used the API before.
   black, CPU-drawn content view.
 - `0001-empty-launch-window/swift-metal` is complete: a `CAMetalLayer`-backed
   window cleared to dark blue by a Metal render pass.
+- `0001-empty-launch-window/rust-appkit` is complete: the AppKit baseline ported
+  to Rust through the `objc2` bindings.
+- `0001-empty-launch-window/rust-metal` is complete: the Metal clear ported to
+  Rust, including explicit `Retained` ownership of the layer and command queue.
 - There are no tests, CI workflows, or shared libraries yet.
 - Task numbers are derived from the top-level directories. After `0001`, the next
   new task is expected to be `0002-<kebab-name>`.
@@ -115,6 +119,37 @@ swift run
 The debug binary is `.build/debug/EmptyGameWindow` in the AppKit variant and
 `.build/debug/MetalLaunchWindow` in the Metal variant. Release builds use
 `swift build -c release`. Run `swift test` when a test target exists.
+
+The Rust variants live in a Cargo workspace at
+`0001-empty-launch-window/Cargo.toml`:
+
+```sh
+cd 0001-empty-launch-window
+cargo run -p rust-appkit
+cargo run -p rust-metal
+```
+
+The workspace target directory is `0001-empty-launch-window/target/`. `Cargo.lock`
+is committed because these are binaries. Run the complete Rust check — formatting,
+Clippy with warnings denied, build, and test — from the repository root:
+
+```sh
+./scripts/check-rust.sh
+```
+
+### Rust conventions
+
+- Use thin API bindings (`objc2`, `objc2-app-kit`, `objc2-metal`,
+  `objc2-quartz-core`) behind our own modules. Do not introduce `winit`, `wgpu`,
+  or an engine for these learning variants.
+- Keep `unsafe` at the FFI and AppKit override boundaries. Every unsafe block
+  needs a `// SAFETY:` comment that states the invariant; the workspace denies
+  `clippy::undocumented_unsafe_blocks`.
+- Keep Objective-C object ownership explicit with `Retained<T>` and store
+  long-lived GPU objects in class ivars.
+- The workspace pins Rust 1.97.1 in `rust-toolchain.toml`; run `cargo fmt --all`
+  and `cargo clippy --workspace --all-targets -- -D warnings` before committing.
+- Add new Rust crates as workspace members and keep `Cargo.lock` in sync.
 
 ### Verifying a GUI launch
 
@@ -192,6 +227,7 @@ Verified on 2026-10-19 (re-check before relying on it):
 
 - macOS 26.6.2, arm64
 - Swift 6.3.3 (Xcode Command Line Tools)
+- Rust 1.97.1, Cargo 1.97.1 (pinned by `rust-toolchain.toml`)
 - Git 2.50.1
 - Swift package deployment target: macOS 14
 

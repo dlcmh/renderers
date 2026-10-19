@@ -445,7 +445,7 @@ yours.
 
 | Crate | Role | Verdict for this repo |
 | --- | --- | --- |
-| `objc2`, `objc2-app-kit`, `objc2-metal` | Thin Apple API bindings | Use for macOS variants |
+| `objc2`, `objc2-app-kit`, `objc2-metal` | Thin Apple API bindings | Used by the `rust-appkit` and `rust-metal` variants |
 | `metal` | Higher-level Metal wrapper | Alternative; compare later |
 | `ash` | Thin Vulkan bindings | Use for a future Vulkan backend |
 | `bindgen` | Generates C bindings | Tooling, not a runtime dependency |
