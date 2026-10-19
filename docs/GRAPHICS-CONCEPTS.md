@@ -266,6 +266,34 @@ acquire/record/submit/present loop that every backend shares.
 (presentation), and related components. When someone says “Windows uses DirectX,”
 they usually mean Direct3D, but Vulkan also runs natively on Windows.
 
+### Is OpenGL ES still relevant?
+
+Yes, but as a compatibility API rather than the direction of new work.
+
+- **The spec is effectively frozen.** OpenGL ES 3.2 dates from 2015. Khronos has
+  concentrated new feature work on Vulkan, and OpenGL ES updates are maintenance
+  rather than growth.
+- **It is still everywhere.** Android continues to support OpenGL ES, and it
+  remains common for simpler apps, older devices, and embedded/automotive
+  systems. [Huawei documents native OpenGL ES APIs](https://developer.huawei.com/consumer/en/doc/harmonyos-references/opengles)
+  for HarmonyOS alongside Vulkan.
+- **The web depends on it.** WebGL 1 and 2 are based on OpenGL ES 2.0 and 3.0, so
+  GLES concepts remain widespread even in browser code. WebGPU is the modern
+  replacement.
+- **It survives as a translation target.** ANGLE implements OpenGL ES on top of
+  Direct3D, Metal, and Vulkan, and is used by browsers and other portability
+  layers. That keeps GLES relevant even where it is not the native API.
+- **Apple has moved on.** OpenGL and OpenGL ES are deprecated on Apple platforms;
+  Metal is the supported path. macOS has no native OpenGL ES implementation.
+- **Desktop OpenGL is not OpenGL ES.** OpenGL ES is the mobile/embedded subset;
+  desktop OpenGL is a separate legacy API. Neither is a good first target for a
+  new renderer in 2026.
+
+For this repository, GLES is not a primary backend. It is a candidate for a later
+compatibility backend if old Android or HarmonyOS hardware needs it, or as a
+simpler teaching comparison. Vulkan remains the better second backend for
+portability.
+
 ## Platform support at a glance
 
 | Platform | Host / UI | Native GPU APIs | Notes |
@@ -453,6 +481,9 @@ obvious, then let each backend show where it differs.
 - [Microsoft Direct3D 12 documentation](https://learn.microsoft.com/en-us/windows/win32/direct3d12/directx-12-programming-guide)
 - [WebGPU specification](https://www.w3.org/TR/webgpu/)
 - [HarmonyOS: Vulkan support capability](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/vulkan)
+- [HarmonyOS: OpenGL ES standard libraries](https://developer.huawei.com/consumer/en/doc/harmonyos-references/opengles)
+- [Android: Use Vulkan for graphics](https://developer.android.com/games/develop/vulkan/overview)
+- [Khronos OpenGL ES registry](https://www.khronos.org/opengles/)
 - [HarmonyOS: custom rendering with XComponent](https://developer.huawei.com/consumer/en/doc/harmonyos-guides/napi-xcomponent-guidelines)
 - [ohos-rs: OpenHarmony Ability and winit for Harmony](https://ohos.rs/en/blog/2025-01-24/)
 - [winit issue: OpenHarmony support discussion](https://github.com/rust-windowing/winit/issues/4081)
