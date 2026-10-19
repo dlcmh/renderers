@@ -226,6 +226,9 @@ Remove all known build artifacts, including the external root:
 - `screencapture` may fail when Screen Recording permission is not granted. Treat
   that as an environment limitation, not as an app failure, and do not claim a
   screenshot you could not produce.
+- When Screen Recording permission is available, capture the window with
+  `screencapture -x -l <window-id> <path>` and inspect the image to verify the
+  expected surface color.
 - Stop the test app when verification is done so no stale process or window is
   left behind.
 

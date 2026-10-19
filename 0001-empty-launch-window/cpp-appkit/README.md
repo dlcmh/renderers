@@ -107,8 +107,8 @@ does exercise the Objective-C++ code and ARC paths at launch.
 - Debug and sanitizer builds pass with warnings treated as errors.
 - Both C++ binaries launched; the window server reported on-screen windows owned
   by `cpp-appkit` and `cpp-metal` at layer 0 with 1280×752 outer frames.
-- Screen capture was unavailable because Screen Recording permission was not
-  granted; content was verified by code path and window presence.
+- A window screenshot captured with Screen Recording permission confirmed the
+  black surface on 2026-10-19.
 
 ## Structure
 

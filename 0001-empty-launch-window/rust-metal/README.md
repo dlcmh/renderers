@@ -115,8 +115,8 @@ broader comparison.
   `cargo clippy -p rust-metal --all-targets -- -D warnings` pass.
 - Launched from the task workspace; the macOS window server reported an on-screen
   window owned by `rust-metal` at layer 0 with a 1280×752 outer frame.
-- Screen capture was unavailable because Screen Recording permission was not
-  granted; the dark blue pixels were verified by code path and window presence.
+- A window screenshot captured with Screen Recording permission confirmed the
+  dark blue surface on 2026-10-19.
 
 ## Structure
 

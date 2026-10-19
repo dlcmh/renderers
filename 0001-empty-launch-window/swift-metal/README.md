@@ -221,9 +221,8 @@ For the full vocabulary and a platform portability checklist, see
 Complete and verified on 2026-10-19 (macOS 26.6.2, arm64, Swift 6.3.3). A clean
 `swift build` succeeds with no warnings. The window server reported an on-screen
 window owned by `MetalLaunchWindow` with layer 0 and a 1280×752 outer frame.
-Screen capture was unavailable because Screen Recording permission was not
-granted, so the dark blue content was verified by code path and window presence,
-not by a screenshot.
+A window screenshot captured with Screen Recording permission confirmed the dark
+blue surface on 2026-10-19.
 
 ## Structure
 

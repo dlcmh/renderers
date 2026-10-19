@@ -76,8 +76,8 @@ Confirm each window through the macOS window server. A temporary
 and `cpp-metal`, each at layer 0 with a 1280×752 outer frame (720pt content plus
 title bar). Quit each app afterward; no process should remain.
 
-Screen capture was unavailable because Screen Recording permission was not
-granted; this does not affect the apps.
+Screen capture is available with Screen Recording permission; all six variants
+were captured on 2026-10-19 and showed the expected black or dark blue surfaces.
 
 Remove all in-repo and external build artifacts with:
 

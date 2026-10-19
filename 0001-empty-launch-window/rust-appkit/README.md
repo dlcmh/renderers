@@ -104,8 +104,8 @@ are retained by their local variables and AppKit references.
   `cargo clippy -p rust-appkit --all-targets -- -D warnings` pass.
 - Launched from the task workspace; the macOS window server reported an on-screen
   window owned by `rust-appkit` at layer 0 with a 1280×752 outer frame.
-- Screen capture was unavailable because Screen Recording permission was not
-  granted; the black content was verified by code path and window presence.
+- A window screenshot captured with Screen Recording permission confirmed the
+  black surface on 2026-10-19.
 
 ## Structure
 
